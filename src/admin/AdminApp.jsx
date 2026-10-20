@@ -5,6 +5,7 @@ import { useCloudSync } from './cloud'
 import ContentPage from './ContentPage'
 import EnquiriesPage from './EnquiriesPage'
 import { useEnquiries } from './enquiries'
+import { ResourceEditor, ResourcesList } from './ResourcesAdmin'
 import InsightsPage from './InsightsPage'
 import { LogPage, RoutinesPage } from './OtherPages'
 import TodayPage from './TodayPage'
@@ -14,13 +15,14 @@ import TaskModal from './TaskModal'
 import { buildBackup, parseBackup, toDateStr, useAdminStore, useNow } from './store'
 import './admin.css'
 
-const PAGE_TITLES = { today: 'Today', projects: 'Projects', project: 'Project', routines: 'Routines', insights: 'Insights', log: 'Log', enquiries: 'Enquiries', content: 'Site content' }
+const PAGE_TITLES = { today: 'Today', projects: 'Projects', project: 'Project', routines: 'Routines', insights: 'Insights', log: 'Log', enquiries: 'Enquiries', content: 'Site content', resources: 'Resources', resource: 'Resource' }
 const COLLAPSE_KEY = 'cb-admin-collapsed'
 
 function parseRoute() {
   const [name, id] = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean)
   if (name === 'projects' && id) return { name: 'project', id: decodeURIComponent(id) }
-  return { name: ['today', 'projects', 'routines', 'insights', 'log', 'enquiries', 'content'].includes(name) ? name : 'projects' }
+  if (name === 'resources' && id) return { name: 'resource', id: decodeURIComponent(id) }
+  return { name: ['today', 'projects', 'routines', 'insights', 'log', 'enquiries', 'content', 'resources'].includes(name) ? name : 'projects' }
 }
 
 const isTyping = (el) => el && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))
@@ -227,6 +229,8 @@ export default function AdminApp({ user, onSignOut }) {
           {route.name === 'log' && <LogPage />}
           {route.name === 'enquiries' && <EnquiriesPage />}
           {route.name === 'content' && <ContentPage />}
+          {route.name === 'resources' && <ResourcesList />}
+          {route.name === 'resource' && <ResourceEditor key={route.id} id={route.id} />}
         </main>
 
         {editing?.kind === 'task' && (
