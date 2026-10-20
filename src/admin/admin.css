@@ -3191,3 +3191,27 @@
     }
   }
 }
+
+@layer components {
+  /* The quick-tasks panel must shrink to its column instead of running past it. */
+  .adm-projects > * {
+    min-width: 0;
+  }
+
+  .adm-quick-panel {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .adm-quick-panel ul {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .adm-quick-panel li {
+    min-width: 0;
+  }
+
+  .adm-quick-panel .adm-tick {
+    flex: none;
+  }
+}
