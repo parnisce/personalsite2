@@ -310,14 +310,14 @@ function seedState() {
 
   const formKey = makeTask({
     projectId: site.id,
-    title: 'Add the Web3Forms access key',
-    description: 'Sign up at web3forms.com with your email, then paste the key into FORM_ACCESS_KEY in src/data.js so contact-form messages reach your inbox.',
+    title: 'Test the contact form',
+    description: 'The contact form opens the visitor’s email app with the enquiry filled in. Check it works on desktop and phone.',
     status: 'doing',
     priority: 'urgent',
     dueDate: addDays(today, 1),
     labels: ['website'],
     estimate: 20,
-    subtasks: [sub('Get the access key by email', true), sub('Paste it into src/data.js'), sub('Send a test message from the form')],
+    subtasks: [sub('Fill in the form', true), sub('Check the email app opens with the details'), sub('Try it on a phone')],
   })
   const screenshots = makeTask({ projectId: site.id, title: 'Add real project screenshots to the Work section', description: 'Replace the placeholder artwork on the three project cards with screenshots of the live sites.', priority: 'high', dueDate: addDays(today, 6), labels: ['content'], estimate: 90 })
   const deploy = makeTask({

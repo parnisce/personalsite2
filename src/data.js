@@ -163,12 +163,6 @@ export const STACK = [
   { name: 'FunnelKit', Icon: TbBolt, color: '#7c6cff' },
 ]
 
-// Contact form delivery. Fill in ONE of these and messages go straight to your inbox:
-//  - FORM_ACCESS_KEY: the free access key from https://web3forms.com (the simplest option)
-//  - FORM_ENDPOINT:   a form URL from another service, e.g. Formspree's https://formspree.io/f/xxxx
-// While both are empty, the form opens the visitor's email app with the message ready to send.
-export const FORM_ACCESS_KEY = ''
-export const FORM_ENDPOINT = ''
 
 export const CONTACT = {
   email: 'cyrylbitangcol@gmail.com',
