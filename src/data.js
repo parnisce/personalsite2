@@ -23,6 +23,7 @@ export const NAV = [
   { id: 'testimonials', label: 'Testimonials' },
   { id: 'stack', label: 'Services' },
   { id: 'contact', label: 'Contact' },
+  { id: 'tools', label: 'Free Tools', href: '/tools/' },
 ]
 
 export const BOOKING_URL = 'https://go.cyrusbitangcol.com/book-a-call'

@@ -25,11 +25,3 @@ dist-ssr
 
 # Local tooling
 .claude
-
-# Free Tools (kept local, not on GitHub)
-/tools/
-/src/tools/
-/src/tools.js
-/src/tools-main.jsx
-/src/ToolsPage.jsx
-/src/ToolsPage.css
