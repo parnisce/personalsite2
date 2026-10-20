@@ -7,7 +7,6 @@ import {
   TbArrowUpRight,
   TbFileTypePdf,
   TbPalette,
-  TbVideo,
   TbPhoto,
   TbSearch,
   TbShieldLock,
@@ -25,7 +24,6 @@ const CATEGORY_ICONS = {
   Converters: TbArrowsExchange,
   PDF: TbFileTypePdf,
   Colour: TbPalette,
-  'Video & audio': TbVideo,
 }
 
 const COUNTS = TOOLS.reduce((acc, t) => ({ ...acc, [t.category]: (acc[t.category] ?? 0) + 1 }), {})
@@ -133,7 +131,7 @@ function Directory() {
           <span className="accent">No uploads, no sign&#8209;up.</span>
         </h1>
         <p className="lead">
-          Resize, convert and edit images, work with PDFs and colour, and transcribe video and audio, all inside your browser.
+          Resize, convert and edit images, work with PDFs and colour, all inside your browser.
         </p>
         <p className="privacy-note">
           <TbShieldLock /> Files are processed on your device and never uploaded.
