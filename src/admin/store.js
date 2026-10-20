@@ -33,6 +33,15 @@ const LEGACY_KEY = 'cb-admin-tasks-v1'
 const STATUS_IDS = STATUSES.map((s) => s.id)
 const PRIORITY_IDS = PRIORITIES.map((p) => p.id)
 const MAX_ACTIVITY = 150
+const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/
+
+// Minutes between going to bed and waking up (the bedtime is the evening before when it is later).
+export function sleepMinutes(bed, wake) {
+  const toMin = (t) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3))
+  const diff = toMin(wake) - toMin(bed)
+  return diff > 0 ? diff : diff + 1440
+}
+
 const MAX_ENTRIES = 3000
 
 export const statusOf = (id) => STATUSES.find((s) => s.id === id) ?? STATUSES[0]
@@ -250,10 +259,17 @@ export function normalizeState(raw) {
       taskId: str(e.taskId, 80),
       projectId: projectIds.has(e.projectId) ? e.projectId : null,
       title: str(e.title, 200) || 'Task',
+      categoryId: categoryIds.has(e.categoryId) ? e.categoryId : null,
       start: e.start,
       seconds: Math.min(Math.round(Number(e.seconds)), 86400 * 2),
     }))
     .slice(0, MAX_ENTRIES)
+
+  const sleep = (Array.isArray(raw?.sleep) ? raw.sleep : [])
+    .filter((n) => n && parseDate(n.date) && TIME_PATTERN.test(n.bed ?? '') && TIME_PATTERN.test(n.wake ?? ''))
+    .map((n) => ({ date: n.date, bed: n.bed, wake: n.wake, minutes: sleepMinutes(n.bed, n.wake) }))
+    .filter((n, i, all) => all.findIndex((m) => m.date === n.date) === i)
+    .slice(0, 800)
 
   const routines = (Array.isArray(raw?.routines) ? raw.routines : [])
     .map((r) => ({
@@ -273,7 +289,7 @@ export function normalizeState(raw) {
 
   const timer = raw?.timer && typeof raw.timer.taskId === 'string' && iso(raw.timer.startedAt) && tasks.some((t) => t.id === raw.timer.taskId) ? { taskId: raw.timer.taskId, startedAt: raw.timer.startedAt } : null
 
-  return { version: 2, categories, projects, tasks, routines, entries, activity, timer }
+  return { version: 2, categories, projects, tasks, routines, entries, sleep, activity, timer }
 }
 
 // Version 1 had no projects; people's clients become projects so nothing is lost.
@@ -481,6 +497,19 @@ export function reducer(state, action) {
       const entry = { id: uid(), taskId: task.id, projectId: task.projectId, title: task.title, start: action.start ?? new Date().toISOString(), seconds: Math.min(Math.round(action.seconds), 86400) }
       return log({ ...state, entries: [entry, ...state.entries].slice(0, MAX_ENTRIES) }, task, `Logged ${formatDuration(entry.seconds)}`)
     }
+    case 'ADD_TIME': {
+      const category = state.categories.find((c) => c.id === action.categoryId)
+      if (!category || !(action.seconds > 0)) return state
+      const entry = { id: action.id ?? uid(), taskId: '', projectId: null, categoryId: category.id, title: action.title?.trim() || category.name, start: action.start ?? new Date().toISOString(), seconds: Math.min(Math.round(action.seconds), 86400) }
+      return { ...state, entries: [entry, ...state.entries].slice(0, MAX_ENTRIES) }
+    }
+    case 'ADD_SLEEP': {
+      if (!parseDate(action.date) || !TIME_PATTERN.test(action.bed) || !TIME_PATTERN.test(action.wake)) return state
+      const night = { date: action.date, bed: action.bed, wake: action.wake, minutes: sleepMinutes(action.bed, action.wake) }
+      return { ...state, sleep: [night, ...state.sleep.filter((n) => n.date !== night.date)].sort((a, b) => b.date.localeCompare(a.date)) }
+    }
+    case 'DELETE_SLEEP':
+      return { ...state, sleep: state.sleep.filter((n) => n.date !== action.date) }
     case 'DELETE_ENTRY':
       return { ...state, entries: state.entries.filter((e) => e.id !== action.id) }
 
@@ -623,13 +652,46 @@ export function weekActivity(state, today) {
   })
 }
 
+// The category an entry counts toward: the one it was logged to, else its project's.
+export const entryCategory = (state, e) => e.categoryId ?? state.projects.find((p) => p.id === e.projectId)?.categoryId ?? null
+
+// Per day: total seconds and seconds per category (including the timer that is running now).
+export function dayTotals(state, now = 0) {
+  const days = {}
+  const add = (date, cat, seconds) => {
+    const d = (days[date] ??= { total: 0, cats: {} })
+    d.total += seconds
+    d.cats[cat ?? 'none'] = (d.cats[cat ?? 'none'] ?? 0) + seconds
+  }
+  state.entries.forEach((e) => add(localDay(e.start), entryCategory(state, e), e.seconds))
+  if (state.timer && now) {
+    const task = state.tasks.find((t) => t.id === state.timer.taskId)
+    const project = state.projects.find((p) => p.id === task?.projectId)
+    const secs = runningSeconds(state.timer, now, () => true)
+    if (secs) add(localDay(new Date(now).toISOString()), project?.categoryId, secs)
+  }
+  return days
+}
+
+export const topCategory = (cats) => Object.entries(cats ?? {}).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null
+
+// Streak of days in a row with some time logged. Today does not break it until the day is over.
+export function loggedStreak(days, today) {
+  let date = days[today]?.total ? today : addDays(today, -1)
+  let n = 0
+  while (days[date]?.total) {
+    n += 1
+    date = addDays(date, -1)
+  }
+  return n
+}
+
 export function categoryTimeThisWeek(state, today) {
   const days = new Set(weekDates(today))
-  const projectCategory = Object.fromEntries(state.projects.map((p) => [p.id, p.categoryId]))
   const totals = {}
   state.entries.forEach((e) => {
     if (!days.has(localDay(e.start))) return
-    const key = projectCategory[e.projectId] ?? 'none'
+    const key = entryCategory(state, e) ?? 'none'
     totals[key] = (totals[key] ?? 0) + e.seconds
   })
   return totals
@@ -666,8 +728,8 @@ export const subtaskProgress = (t) => ({ done: t.subtasks.filter((s) => s.done).
 // ---------------------------------------------------------------- backup
 
 export function buildBackup(state) {
-  const { categories, projects, tasks, routines, entries, activity, timer } = state
-  return JSON.stringify({ app: 'cb-task-manager', version: 2, exportedAt: new Date().toISOString(), categories, projects, tasks, routines, entries, activity, timer }, null, 2)
+  const { categories, projects, tasks, routines, entries, sleep, activity, timer } = state
+  return JSON.stringify({ app: 'cb-task-manager', version: 2, exportedAt: new Date().toISOString(), categories, projects, tasks, routines, entries, sleep, activity, timer }, null, 2)
 }
 
 export function parseBackup(text) {
