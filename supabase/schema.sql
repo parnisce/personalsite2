@@ -73,3 +73,28 @@ drop policy if exists "owner reads all" on public.resources;
 create policy "owner reads all" on public.resources for select to authenticated using (true);
 drop policy if exists "owner writes resources" on public.resources;
 create policy "owner writes resources" on public.resources for all to authenticated using (true) with check (true);
+
+-- 5. First-party analytics (page views and events). No cookies, no IP addresses stored.
+-- Anyone can add a row; only you can read or delete them.
+create table if not exists public.analytics_events (
+  id bigint generated always as identity primary key,
+  created_at timestamptz not null default now(),
+  session_id text not null check (char_length(session_id) between 8 and 40),
+  type text not null check (type in ('pageview', 'event')),
+  name text check (char_length(name) <= 80),
+  detail text check (char_length(detail) <= 200),
+  path text not null check (char_length(path) <= 300),
+  referrer text check (char_length(referrer) <= 200),
+  utm_source text check (char_length(utm_source) <= 100),
+  utm_medium text check (char_length(utm_medium) <= 100),
+  utm_campaign text check (char_length(utm_campaign) <= 100),
+  device text check (device in ('mobile', 'tablet', 'desktop'))
+);
+create index if not exists analytics_events_created_idx on public.analytics_events (created_at desc);
+alter table public.analytics_events enable row level security;
+drop policy if exists "anyone can record" on public.analytics_events;
+create policy "anyone can record" on public.analytics_events for insert to anon, authenticated with check (true);
+drop policy if exists "owner reads analytics" on public.analytics_events;
+create policy "owner reads analytics" on public.analytics_events for select to authenticated using (true);
+drop policy if exists "owner deletes analytics" on public.analytics_events;
+create policy "owner deletes analytics" on public.analytics_events for delete to authenticated using (true);

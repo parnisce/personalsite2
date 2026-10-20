@@ -15,10 +15,11 @@ export const EVIDENCE = [
   { check: 'Lint (oxlint)', result: '0 errors, 14 warnings (React effect and fast-refresh rules)', ok: false },
   { check: 'Automated tests', result: 'None in the project', ok: false },
   { check: 'Outdated packages', result: '2 minor updates available (@react-three/postprocessing, oxlint)', ok: true },
+  { check: 'Tracking (analytics)', result: 'First-party, cookie-free page views and events saved to Supabase; no IPs stored; Do Not Track, admin, bots and localhost excluded', ok: true },
   { check: 'Secrets in the repository', result: 'None found; only the public Supabase publishable key is committed', ok: true },
 ]
 
-export const AREAS = ['Security', 'SEO', 'Performance', 'Accessibility', 'Code & process']
+export const AREAS = ['Security', 'Tracking & privacy', 'SEO', 'Performance', 'Accessibility', 'Code & process']
 export const SEVERITIES = ['high', 'medium', 'low', 'info']
 
 // status: 'open' needs action, 'fixed' was resolved, 'pass' is a check that came out fine.
@@ -95,6 +96,62 @@ export const FINDINGS = [
     title: 'Sign-out clears the cached admin data',
     detail: 'The task data cached in the browser is removed when you sign out, so a shared computer does not keep it.',
     action: '',
+  },
+
+  // ---- Tracking & privacy
+  {
+    id: 'TRK-1',
+    area: 'Tracking & privacy',
+    severity: 'info',
+    status: 'pass',
+    title: 'Analytics is first-party and cookie-free',
+    detail: 'Page views and a few events (contact form sent, email click, outside link click) are saved to your own Supabase table. No cookies, no IP address, no third-party scripts. The only identifier is a random id in sessionStorage that disappears when the tab closes. Do Not Track, automated browsers, localhost, the admin and browsers you exclude are not recorded.',
+    action: '',
+  },
+  {
+    id: 'TRK-2',
+    area: 'Tracking & privacy',
+    severity: 'medium',
+    status: 'open',
+    title: 'No privacy notice describes the tracking',
+    detail: 'The site collects contact form messages and visit statistics, but has no privacy page saying what is collected, why, where it is kept and how to ask for deletion. Cookie-free analytics usually needs no consent banner, but visitors in the EU, UK and similar regions should still be told.',
+    action: 'Add a short Privacy page (what is collected, Supabase as the processor, retention period, contact email) and link it from the footer. Have the wording checked if you serve regulated markets.',
+  },
+  {
+    id: 'TRK-3',
+    area: 'Tracking & privacy',
+    severity: 'low',
+    status: 'open',
+    title: 'Analytics rows can be forged or flooded',
+    detail: 'Anyone with the public key can insert analytics rows, so a script could add fake visits or fill the table. The numbers are indicative, not audited.',
+    action: 'Fine for a portfolio. If it matters, route inserts through an edge function with rate limiting, or purge suspicious sessions.',
+  },
+  {
+    id: 'TRK-4',
+    area: 'Tracking & privacy',
+    severity: 'low',
+    status: 'open',
+    title: 'Analytics is totalled in the browser and never deleted',
+    detail: 'The admin Analytics page downloads up to 10,000 of the latest rows and counts them in the browser, and rows are kept forever. That is fine at low traffic but slows down and under-counts as the table grows.',
+    action: 'Move the counting into SQL views or a function, and delete rows older than about 13 months with a scheduled job.',
+  },
+  {
+    id: 'TRK-5',
+    area: 'Tracking & privacy',
+    severity: 'low',
+    status: 'open',
+    title: 'Counts are visits, not unique people, and there is no search-keyword data',
+    detail: 'Because no persistent id is kept, a returning person is counted again on every visit. Google Search Console is not connected, so you cannot see which search terms bring people in.',
+    action: 'Verify the site in Google Search Console and submit the sitemap once it exists. Add Google Analytics or an ad pixel only if you need ad reporting, and add a consent banner at that point.',
+  },
+  {
+    id: 'TRK-6',
+    area: 'Tracking & privacy',
+    severity: 'info',
+    status: 'open',
+    title: 'Run the updated schema.sql to switch tracking on',
+    detail: 'The analytics_events table is created by supabase/schema.sql. Until it is run, the tracker fails silently and the Analytics page shows an error.',
+    action: 'Run the latest supabase/schema.sql in the Supabase SQL Editor, then open the live site once and check the Analytics page.',
   },
 
   // ---- SEO

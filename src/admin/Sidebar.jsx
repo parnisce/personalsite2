@@ -5,6 +5,7 @@ import {
   TbClockHour4,
   TbDownload,
   TbBook,
+  TbChartLine,
   TbClipboardCheck,
   TbExternalLink,
   TbFileText,
@@ -158,6 +159,10 @@ export default function Sidebar({ route, collapsed, onToggle, onExport, onImport
           <a href="#/resources" className={active === 'resources' || active === 'resource' ? 'is-active' : ''} title={collapsed ? 'Resources' : undefined}>
             <TbBook aria-hidden="true" />
             <span>Resources</span>
+          </a>
+          <a href="#/analytics" className={active === 'analytics' ? 'is-active' : ''} title={collapsed ? 'Analytics' : undefined}>
+            <TbChartLine aria-hidden="true" />
+            <span>Analytics</span>
           </a>
           <a href="#/audit" className={active === 'audit' ? 'is-active' : ''} title={collapsed ? 'Internal audit' : undefined}>
             <TbClipboardCheck aria-hidden="true" />
