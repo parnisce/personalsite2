@@ -6,7 +6,7 @@ import { defineConfig } from 'vite'
 
 // Sends "/tools" to "/tools/" (and "/admin" to "/admin/") so those pages load instead of the
 // home page fallback. Static hosts usually do this redirect themselves.
-const SLASH_PAGES = ['/tools', '/admin']
+const SLASH_PAGES = ['/tools', '/admin', '/resources']
 const toolsSlash = (req, res, next) => {
   const page = SLASH_PAGES.find((p) => req.url === p || req.url?.startsWith(`${p}?`))
   if (page) {
@@ -45,6 +45,7 @@ export default defineConfig({
         main: path.resolve(import.meta.dirname, 'index.html'),
         ...(hasTools && { tools: path.resolve(import.meta.dirname, 'tools/index.html') }),
         admin: path.resolve(import.meta.dirname, 'admin/index.html'),
+        resources: path.resolve(import.meta.dirname, 'resources/index.html'),
       },
     },
   },

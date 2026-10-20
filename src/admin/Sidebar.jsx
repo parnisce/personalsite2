@@ -4,6 +4,7 @@ import {
   TbChartBar,
   TbClockHour4,
   TbDownload,
+  TbBook,
   TbExternalLink,
   TbFileText,
   TbInbox,
@@ -152,6 +153,10 @@ export default function Sidebar({ route, collapsed, onToggle, onExport, onImport
             <TbInbox aria-hidden="true" />
             <span>Enquiries</span>
             {enquiries.unread > 0 && <b className="adm-badge">{enquiries.unread}</b>}
+          </a>
+          <a href="#/resources" className={active === 'resources' || active === 'resource' ? 'is-active' : ''} title={collapsed ? 'Resources' : undefined}>
+            <TbBook aria-hidden="true" />
+            <span>Resources</span>
           </a>
           <a href="#/content" className={active === 'content' ? 'is-active' : ''} title={collapsed ? 'Site content' : undefined}>
             <TbFileText aria-hidden="true" />

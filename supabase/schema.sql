@@ -50,3 +50,26 @@ create policy "public reads content" on public.site_content for select to anon, 
 drop policy if exists "owner writes content" on public.site_content;
 create policy "owner writes content" on public.site_content
   for all to authenticated using (true) with check (true);
+
+-- 4. Resources: the articles shown at /resources/ (managed from Admin -> Resources).
+create table if not exists public.resources (
+  id uuid primary key default gen_random_uuid(),
+  slug text not null unique check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
+  title text not null check (char_length(title) between 1 and 200),
+  summary text not null default '' check (char_length(summary) <= 300),
+  tags text[] not null default '{}',
+  body text not null default '',
+  github_url text,
+  github jsonb,
+  published boolean not null default false,
+  published_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table public.resources enable row level security;
+drop policy if exists "public reads published" on public.resources;
+create policy "public reads published" on public.resources for select to anon, authenticated using (published = true);
+drop policy if exists "owner reads all" on public.resources;
+create policy "owner reads all" on public.resources for select to authenticated using (true);
+drop policy if exists "owner writes resources" on public.resources;
+create policy "owner writes resources" on public.resources for all to authenticated using (true) with check (true);

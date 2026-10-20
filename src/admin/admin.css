@@ -3215,3 +3215,185 @@
     flex: none;
   }
 }
+
+/* ---------------------------------------------------------------- Admin: Resources */
+@layer components {
+  .adm-reslist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .adm-reslist a {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1.2fr) minmax(0, 2fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--card);
+    text-decoration: none;
+  }
+
+  .adm-reslist a:hover {
+    border-color: var(--line-2);
+  }
+
+  .adm-reslist strong {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .adm-reslist-sum {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.84rem;
+    color: var(--muted);
+  }
+
+  .adm-reslist small {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .adm-pubtag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    color: var(--muted);
+    border: 1px solid var(--line-2);
+  }
+
+  .adm-pubtag.is-live {
+    color: var(--green);
+    border-color: rgba(47, 191, 138, 0.5);
+    background: rgba(47, 191, 138, 0.1);
+  }
+
+  .adm-resed-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 12px 0 0;
+  }
+
+  .adm-resed-status small {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .adm-resed-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  .adm-resed-form {
+    display: grid;
+    gap: 16px;
+  }
+
+  .adm-resed-preview {
+    display: grid;
+    gap: 10px;
+    position: sticky;
+    top: 16px;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+  }
+
+  .adm-resed-preview .res-article {
+    max-width: none;
+  }
+
+  .adm-slug,
+  .adm-fetchrow {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .adm-slug span {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .adm-slug input,
+  .adm-fetchrow input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .adm-mdbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 6px;
+    border: 1px solid var(--line-2);
+    border-radius: 10px 10px 0 0;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .adm-mdbar button {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--muted);
+    font-size: 1.05rem;
+    cursor: pointer;
+  }
+
+  .adm-mdbar button:hover {
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .adm-mdarea {
+    border-radius: 0 0 10px 10px;
+    border-top: 0;
+    font-family: var(--mono);
+  }
+
+  @media (max-width: 1180px) {
+    .adm-resed-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .adm-resed-preview {
+      position: static;
+      max-height: none;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .adm-reslist a {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .adm-reslist-sum,
+    .adm-reslist small {
+      grid-column: 1 / -1;
+    }
+  }
+}
