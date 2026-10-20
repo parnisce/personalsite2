@@ -78,6 +78,8 @@ export async function fetchRepo(url) {
     license: r.license?.spdx_id && r.license.spdx_id !== 'NOASSERTION' ? r.license.spdx_id : r.license?.name ?? null,
     pushed_at: r.pushed_at,
     description: r.description,
+    topics: r.topics ?? [],
+    default_branch: r.default_branch,
   }
 }
 
