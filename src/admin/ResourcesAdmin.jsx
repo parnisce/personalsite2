@@ -20,7 +20,8 @@ import {
   TbTrash,
 } from 'react-icons/tb'
 import { ResourceArticle } from '../components/ResourceParts'
-import { fetchRepo, parseRepo, parseTags, readingMinutes, shortDate, slugify } from '../lib/resources'
+import { parseRepo, parseTags, readingMinutes, shortDate, slugify } from '../lib/resources'
+import { draftFromRepo } from '../lib/repoDraft'
 import { supabase } from '../lib/supabase'
 import '../ResourcesPage.css'
 import { useAdmin } from './ctx'
@@ -184,11 +185,21 @@ export function ResourceEditor({ id }) {
     setFetching(true)
     setError('')
     try {
-      const repo = await fetchRepo(draft.github_url)
-      const patch = { github: repo, github_url: repo.html_url }
-      if (!draft.summary && repo.description) patch.summary = repo.description.slice(0, 160)
+      const made = await draftFromRepo(draft.github_url)
+      const { repo } = made
+      const patch = { github: { ...repo, topics: undefined, default_branch: undefined }, github_url: repo.html_url }
+      if (!draft.title.trim()) {
+        patch.title = made.title
+        if (!slugTouched) patch.slug = slugify(made.title)
+      }
+      if (!draft.summary.trim()) patch.summary = made.summary
+      patch.tags = parseTags(`${draft.tags},${made.tags.join(',')}`).join(', ')
+      // A body that already has content is only replaced if you say so.
+      const hasBody = draft.body.trim().length > 0
+      const replaceBody = !hasBody || window.confirm('Replace the current body with a fresh draft built from the README?')
+      if (replaceBody) patch.body = made.body
       set(patch)
-      toast(`Fetched ${repo.full_name}`)
+      toast(replaceBody ? `Generated tags and body from ${repo.full_name}${made.foundReadme ? '' : ' (no README found)'}` : `Updated the repo details for ${repo.full_name}`)
     } catch (e) {
       setError(e.message)
     }
@@ -355,7 +366,7 @@ export function ResourceEditor({ id }) {
                 <TbDownload aria-hidden="true" /> {fetching ? 'Fetching…' : 'Fetch'}
               </button>
             </div>
-            <p className="adm-hint">Fetch pulls the stars, language, licence and last update from GitHub. Fetch again any time to refresh them.</p>
+            <p className="adm-hint">Fetch reads the repo and drafts the tags, summary and body from its topics, description and README, so you only have to edit. Fetch again any time to refresh the stars and details.</p>
           </div>
           <div className="adm-field">
             <label htmlFor={f('summary')}>
