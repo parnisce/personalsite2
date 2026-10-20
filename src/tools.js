@@ -1,7 +1,7 @@
 // The Free Tools directory. Every tool runs in the visitor's browser on this site (see
 // src/tools/registry.jsx); a tool opens at /tools/#/<slug>.
 
-export const TOOL_CATEGORIES = ['Image', 'Converters', 'PDF', 'Colour']
+export const TOOL_CATEGORIES = ['Image', 'Converters', 'PDF', 'Colour', 'Video & audio']
 
 // [slug, category, name, description, note?]  (`note` is extra small print shown on the tool page)
 const RAW = [
@@ -63,6 +63,10 @@ const RAW = [
   ['color-contrast-checker', 'Colour', 'Colour Contrast Checker', 'Check two colours against the WCAG AA and AAA contrast rules.'],
   ['hex-to-rgb-converter', 'Colour', 'HEX to RGB', 'Convert a HEX colour code to RGB and HSL.'],
   ['rgb-to-hex-converter', 'Colour', 'RGB to HEX', 'Convert RGB values to a HEX colour code.'],
+  ['video-transcriber', 'Video & audio', 'Video Transcriber', 'Turn the speech in a video into text with timestamps, then copy it or download it as TXT, SRT or VTT.', 'The speech model downloads the first time you use it (from about 40 MB up to a few hundred MB, depending on the accuracy you pick) and is then kept in your browser.'],
+  ['subtitle-generator', 'Video & audio', 'Subtitle Generator (SRT & VTT)', "Create subtitle files from a video's speech, ready for YouTube, Vimeo or any video editor.", 'The speech model downloads the first time you use it (from about 40 MB up to a few hundred MB, depending on the accuracy you pick) and is then kept in your browser.'],
+  ['audio-transcriber', 'Video & audio', 'Audio Transcriber', 'Turn a recording, voice note, interview or podcast into text.', 'The speech model downloads the first time you use it (from about 40 MB up to a few hundred MB, depending on the accuracy you pick) and is then kept in your browser.'],
+  ['extract-audio', 'Video & audio', 'Extract Audio from Video', 'Pull the sound out of a video and save it as a WAV file.'],
 ]
 
 export const TOOLS = RAW.map(([slug, category, name, description, note]) => ({
