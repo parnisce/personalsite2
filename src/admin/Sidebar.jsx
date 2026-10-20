@@ -7,7 +7,6 @@ import {
   TbBook,
   TbChartLine,
   TbClipboardCheck,
-  TbExternalLink,
   TbFileText,
   TbInbox,
   TbLogout,
@@ -171,10 +170,6 @@ export default function Sidebar({ route, collapsed, onToggle, onExport, onImport
           <a href="#/content" className={active === 'content' ? 'is-active' : ''} title={collapsed ? 'Site content' : undefined}>
             <TbFileText aria-hidden="true" />
             <span>Site content</span>
-          </a>
-          <a href="/" title={collapsed ? 'View site' : undefined}>
-            <TbExternalLink aria-hidden="true" />
-            <span>View site</span>
           </a>
           <a href="/tools/" title={collapsed ? 'Free tools' : undefined}>
             <TbTools aria-hidden="true" />

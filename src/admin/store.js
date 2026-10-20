@@ -187,7 +187,8 @@ export function makeProject(partial = {}) {
 }
 
 export function makeRoutine(partial = {}) {
-  return { id: uid(), name: '', categoryId: 'rest', days: [0, 1, 2, 3, 4], done: {}, createdAt: new Date().toISOString(), ...partial }
+  // mode 'times': do it perWeek times on any days. mode 'days': do it on the set days.
+  return { id: uid(), name: '', categoryId: 'rest', mode: 'days', perWeek: 3, days: [0, 1, 2, 3, 4], minutes: 0, reminder: '', done: {}, createdAt: new Date().toISOString(), ...partial }
 }
 
 const LEGACY_STATUS = { todo: 'open', review: 'doing' }
@@ -260,6 +261,8 @@ export function normalizeState(raw) {
       projectId: projectIds.has(e.projectId) ? e.projectId : null,
       title: str(e.title, 200) || 'Task',
       categoryId: categoryIds.has(e.categoryId) ? e.categoryId : null,
+      routineId: str(e.routineId, 80),
+      routineDate: parseDate(e.routineDate) ? e.routineDate : '',
       start: e.start,
       seconds: Math.min(Math.round(Number(e.seconds)), 86400 * 2),
     }))
@@ -276,7 +279,11 @@ export function normalizeState(raw) {
       id: typeof r?.id === 'string' && r.id ? r.id : uid(),
       name: str(r?.name, 120),
       categoryId: categoryIds.has(r?.categoryId) ? r.categoryId : firstCategory,
+      mode: r?.mode === 'times' ? 'times' : 'days',
+      perWeek: Math.min(7, Math.max(1, Math.round(Number(r?.perWeek)) || 3)),
       days: [...new Set((Array.isArray(r?.days) ? r.days : []).map(Number).filter((d) => d >= 0 && d <= 6))].sort(),
+      minutes: Math.min(1440, Math.max(0, Math.round(Number(r?.minutes)) || 0)),
+      reminder: TIME_PATTERN.test(r?.reminder ?? '') ? r.reminder : '',
       done: Object.fromEntries(Object.entries(r?.done && typeof r.done === 'object' ? r.done : {}).filter(([k, v]) => parseDate(k) && v).map(([k]) => [k, true])),
       createdAt: iso(r?.createdAt) ?? new Date().toISOString(),
     }))
@@ -519,17 +526,26 @@ export function reducer(state, action) {
       return { ...state, routines: state.routines.map((r) => (r.id === action.id ? { ...r, ...action.patch, id: r.id } : r)) }
     case 'DELETE_ROUTINE':
       return { ...state, routines: state.routines.filter((r) => r.id !== action.id) }
-    case 'TOGGLE_ROUTINE_DAY':
-      return {
-        ...state,
-        routines: state.routines.map((r) => {
-          if (r.id !== action.id) return r
-          const done = { ...r.done }
-          if (done[action.date]) delete done[action.date]
-          else done[action.date] = true
-          return { ...r, done }
-        }),
+    case 'TOGGLE_ROUTINE_DAY': {
+      const routine = state.routines.find((r) => r.id === action.id)
+      if (!routine) return state
+      const done = { ...routine.done }
+      const wasDone = Boolean(done[action.date])
+      if (wasDone) delete done[action.date]
+      else done[action.date] = true
+      let entries = state.entries
+      // A routine with a default time logs that time on each check-in, and takes it back when unchecked.
+      if (routine.minutes > 0) {
+        if (wasDone) {
+          entries = entries.filter((e) => !(e.routineId === routine.id && e.routineDate === action.date))
+        } else {
+          const start = action.date === toDateStr() ? new Date().toISOString() : new Date(`${action.date}T12:00:00`).toISOString()
+          const entry = { id: uid(), taskId: '', projectId: null, categoryId: routine.categoryId, routineId: routine.id, routineDate: action.date, title: routine.name, start, seconds: routine.minutes * 60 }
+          entries = [entry, ...entries].slice(0, MAX_ENTRIES)
+        }
       }
+      return { ...state, entries, routines: state.routines.map((r) => (r.id === routine.id ? { ...r, done } : r)) }
+    }
 
     case 'REPLACE':
       return action.state
@@ -695,6 +711,40 @@ export function categoryTimeThisWeek(state, today) {
     totals[key] = (totals[key] ?? 0) + e.seconds
   })
   return totals
+}
+
+// ---- routines: weekly targets
+
+export const routineTarget = (r) => (r.mode === 'times' ? r.perWeek : r.days.length)
+export const routineChecks = (r, today) => weekDates(today).filter((d) => r.done[d]).length
+
+// Whether a check-in is expected today: on a set day, or (for "times a week") until the target is met.
+export const routineDueToday = (r, today) => (r.mode === 'times' ? Boolean(r.done[today]) || routineChecks(r, today) < r.perWeek : r.days.includes(weekdayIndex(today)))
+
+// Weeks in a row in which the weekly target was met. The current week only counts once it is met.
+export function routineWeekStreak(r, today) {
+  const target = routineTarget(r)
+  if (!target) return 0
+  const met = (monday) => weekDates(monday).filter((d) => r.done[d]).length >= target
+  let monday = addDays(today, -weekdayIndex(today))
+  if (!met(monday)) monday = addDays(monday, -7)
+  let n = 0
+  while (n < 260 && met(monday)) {
+    n += 1
+    monday = addDays(monday, -7)
+  }
+  return n
+}
+
+// "45m", "1h", "1h30", "1h 30m", "90" -> minutes. Returns null for anything else, 0 for empty.
+export function parseMinutes(text) {
+  const t = String(text ?? '').trim().toLowerCase()
+  if (!t) return 0
+  let m = /^(\d+(?:\.\d+)?)\s*(?:m|min|mins|minutes?)?$/.exec(t)
+  if (m) return Math.round(Number(m[1]))
+  m = /^(\d+(?:\.\d+)?)\s*(?:h|hr|hrs|hours?)\s*(?:(\d+)\s*(?:m|min|mins)?)?$/.exec(t)
+  if (m) return Math.round(Number(m[1]) * 60 + (m[2] ? Number(m[2]) : 0))
+  return null
 }
 
 export function routineStreak(routine, today) {

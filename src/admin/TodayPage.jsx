@@ -3,7 +3,7 @@ import { TbCheck, TbFlame, TbMoon, TbPlayerPlayFilled, TbPlayerStopFilled, TbPlu
 import logo from '../assets/logo.webp'
 import { useAdmin } from './ctx'
 import Modal from './Modal'
-import { addDays, dayTotals, entryCategory, formatDuration, loggedStreak, localDay, longDate, priorityRank, sleepMinutes, topCategory, uid, weekDates, weekdayIndex } from './store'
+import { addDays, dayTotals, entryCategory, formatDuration, loggedStreak, localDay, longDate, priorityRank, routineDueToday, routineTarget, sleepMinutes, topCategory, uid, weekDates } from './store'
 import { CategoryDot, DueChip, StatusTag } from './ui'
 
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
@@ -156,7 +156,7 @@ export default function TodayPage() {
     ...open.filter((t) => t.status === 'doing' && !(t.dueDate && t.dueDate <= today)).sort(sortTasks),
   ]
   const week = weekDates(today)
-  const routines = state.routines.filter((r) => r.days.includes(weekdayIndex(today)))
+  const routines = state.routines.filter((r) => routineDueToday(r, today))
   const routinesWaiting = routines.filter((r) => !r.done[today]).length
   const todayEntries = state.entries.filter((e) => localDay(e.start) === today)
 
@@ -336,14 +336,14 @@ export default function TodayPage() {
             <ul className="adm-dlist">
               {routines.map((r) => {
                 const doneWeek = week.filter((d) => r.done[d]).length
-                const target = r.days.length
+                const target = routineTarget(r)
                 const done = Boolean(r.done[today])
                 return (
                   <li key={r.id} className={done ? 'is-done' : ''}>
                     <span className="adm-miniring" style={{ '--p': Math.min(1, doneWeek / target) }} aria-hidden="true" />
                     <span className="adm-dtitle is-static">
                       <span>{r.name}</span>
-                      <small>{target}x a week</small>
+                      <small>{r.mode === 'times' ? `${target}x a week` : `${target} days a week`}</small>
                     </span>
                     <span className="adm-mono">
                       {doneWeek} / {target}

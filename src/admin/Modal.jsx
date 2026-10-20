@@ -3,7 +3,7 @@ import { TbX } from 'react-icons/tb'
 
 // A dialog shared by every editor: focus moves in on open and back on close, Tab stays inside,
 // Escape closes (asking first if there are unsaved changes) and the page behind does not scroll.
-export default function Modal({ title, dirty = false, onClose, onSubmit, footer, children, size = 'md' }) {
+export default function Modal({ title, subtitle, dirty = false, onClose, onSubmit, footer, children, size = 'md' }) {
   const dialog = useRef(null)
   const headingId = useId()
 
@@ -48,7 +48,10 @@ export default function Modal({ title, dirty = false, onClose, onSubmit, footer,
       <div ref={dialog} className={`adm-modal is-${size}`} role="dialog" aria-modal="true" aria-labelledby={headingId} onKeyDown={onKeyDown}>
         <form onSubmit={onSubmit} noValidate>
           <header className="adm-modal-head">
-            <h2 id={headingId}>{title}</h2>
+            <div>
+              <h2 id={headingId}>{title}</h2>
+              {subtitle && <p className="adm-modal-sub">{subtitle}</p>}
+            </div>
             <button type="button" className="adm-icon-btn" aria-label="Close" onClick={requestClose}>
               <TbX aria-hidden="true" />
             </button>
