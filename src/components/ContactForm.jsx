@@ -1,6 +1,6 @@
 import { useId, useState } from 'react'
 import { FiArrowUpRight, FiCheck, FiChevronDown } from 'react-icons/fi'
-import { BOOKING_URL, CONTACT, FORM_ACCESS_KEY, FORM_ENDPOINT, SERVICES } from '../data'
+import { BOOKING_URL, CONTACT, SERVICES } from '../data'
 
 const INTERESTS = [...SERVICES.map((s) => s.title), 'Something else']
 const EMPTY = { name: '', email: '', phone: '', interest: '', message: '' }
@@ -8,9 +8,6 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
 // mailto: links break above roughly 2000 characters, so a very long message is trimmed there.
 const MAX_BODY = 1800
-
-// Web3Forms is used when an access key is set; any other service goes through FORM_ENDPOINT.
-const ENDPOINT = FORM_ENDPOINT || (FORM_ACCESS_KEY ? 'https://api.web3forms.com/submit' : '')
 
 function validate(v) {
   const errors = {}
@@ -57,7 +54,7 @@ export default function ContactForm() {
   const uid = useId()
   const [values, setValues] = useState(EMPTY)
   const [errors, setErrors] = useState({})
-  const [status, setStatus] = useState('idle') // idle | sending | sent | opened | error
+  const [status, setStatus] = useState('idle') // idle | opened
   const [trap, setTrap] = useState('') // spam trap: people never see or fill this
 
   const id = (name) => `${uid}-${name}`
@@ -72,7 +69,7 @@ export default function ContactForm() {
     },
   })
 
-  const submit = async (e) => {
+  const submit = (e) => {
     e.preventDefault()
     const found = validate(values)
     setErrors(found)
@@ -82,45 +79,24 @@ export default function ContactForm() {
       return
     }
     if (trap) {
-      setStatus('sent') // a bot filled the hidden field; pretend it worked and send nothing
+      setStatus('opened') // a bot filled the hidden field; send nothing
       return
     }
-    if (!ENDPOINT) {
-      openEmailApp(values)
-      setStatus('opened')
-      return
-    }
-    setStatus('sending')
-    try {
-      const subject = `Project enquiry from ${values.name.trim()}`
-      const res = await fetch(ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ ...values, subject, _subject: subject, ...(FORM_ACCESS_KEY && { access_key: FORM_ACCESS_KEY }) }),
-      })
-      if (!res.ok) throw new Error(`Request failed (${res.status})`)
-      setStatus('sent')
-      setValues(EMPTY)
-    } catch {
-      setStatus('error')
-    }
+    openEmailApp(values)
+    setStatus('opened')
   }
 
-  if (status === 'sent' || status === 'opened') {
+  if (status === 'opened') {
     return (
       <div className="contact-form cf-done reveal-card" role="status">
         <span className="cf-done-icon">
           <FiCheck aria-hidden="true" />
         </span>
-        <h3>{status === 'sent' ? 'Thanks, your message is on its way.' : 'Your email is ready to send.'}</h3>
-        <p>
-          {status === 'sent'
-            ? "I've got your details and will reply by email soon."
-            : `Your email app should have opened with everything filled in. Just press send. If nothing opened, write to me at ${CONTACT.email}.`}
-        </p>
+        <h3>Your email is ready to send.</h3>
+        <p>Your email app should have opened with everything filled in. Just press send. If nothing opened, write to me at {CONTACT.email}.</p>
         <div className="cf-foot">
           <button type="button" className="btn btn-ghost btn-sm" onClick={() => setStatus('idle')}>
-            {status === 'sent' ? 'Send another message' : 'Back to the form'}
+            Back to the form
           </button>
           <p>
             Prefer to talk?{' '}
@@ -178,16 +154,10 @@ export default function ContactForm() {
         />
       </div>
 
-      {status === 'error' && (
-        <p className="cf-error cf-banner" role="alert">
-          Something went wrong sending your message. Please try again, or email me at{' '}
-          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>.
-        </p>
-      )}
 
       <div className="cf-foot">
-        <button type="submit" className="btn btn-primary" disabled={status === 'sending'}>
-          {status === 'sending' ? 'Sending…' : 'Send message'} <FiArrowUpRight aria-hidden="true" />
+        <button type="submit" className="btn btn-primary">
+          Send message <FiArrowUpRight aria-hidden="true" />
         </button>
         <p>
           Prefer to talk?{' '}

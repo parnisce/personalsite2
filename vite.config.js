@@ -1,5 +1,6 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
+import fs from 'node:fs'
 import path from 'node:path'
 import { defineConfig } from 'vite'
 
@@ -28,6 +29,9 @@ const toolsSlashPlugin = {
   },
 }
 
+// The Free Tools page is kept out of the GitHub repo, so it is only built when its files exist.
+const hasTools = fs.existsSync(path.resolve(import.meta.dirname, 'tools/index.html'))
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss(), toolsSlashPlugin],
@@ -39,7 +43,7 @@ export default defineConfig({
     rolldownOptions: {
       input: {
         main: path.resolve(import.meta.dirname, 'index.html'),
-        tools: path.resolve(import.meta.dirname, 'tools/index.html'),
+        ...(hasTools && { tools: path.resolve(import.meta.dirname, 'tools/index.html') }),
         admin: path.resolve(import.meta.dirname, 'admin/index.html'),
       },
     },
