@@ -12,7 +12,6 @@ import {
   TbRepeat,
   TbSettings,
   TbSun,
-  TbTools,
   TbUpload,
 } from 'react-icons/tb'
 import LogoMark from '../components/LogoMark'
@@ -141,10 +140,6 @@ export default function Sidebar({ route, collapsed, onToggle, onExport, onImport
           <a href="/" title={collapsed ? 'View site' : undefined}>
             <TbExternalLink aria-hidden="true" />
             <span>View site</span>
-          </a>
-          <a href="/tools/" title={collapsed ? 'Free tools' : undefined}>
-            <TbTools aria-hidden="true" />
-            <span>Free tools</span>
           </a>
         </nav>
 
