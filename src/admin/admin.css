@@ -2972,3 +2972,181 @@
     }
   }
 }
+
+/* ---------------------------------------------------------------- Supabase: login, enquiries, content */
+@layer components {
+  .adm-login-page {
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    grid-template-columns: 1fr;
+  }
+
+  .adm-login {
+    display: grid;
+    gap: 14px;
+    width: min(380px, 100%);
+    padding: 28px;
+    border: 1px solid var(--line-2);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(14, 28, 45, 0.85), rgba(10, 22, 36, 0.95));
+  }
+
+  .adm-login img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+  }
+
+  .adm-login h1 {
+    margin: 0;
+    font-size: 1.6rem;
+  }
+
+  .adm-login .adm-sub {
+    margin: -8px 0 4px;
+  }
+
+  .adm-login-back {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .adm-badge {
+    margin-left: auto;
+    min-width: 20px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-align: center;
+    color: #021320;
+    background: var(--accent);
+  }
+
+  .adm.is-collapsed .adm-badge {
+    display: none;
+  }
+
+  .adm-enq {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .adm-enq li {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--card);
+    overflow: hidden;
+  }
+
+  .adm-enq li.is-open {
+    border-color: var(--line-2);
+  }
+
+  .adm-enq-head {
+    display: grid;
+    grid-template-columns: 10px minmax(90px, 160px) minmax(0, 160px) minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 13px 16px;
+    border: 0;
+    background: none;
+    color: var(--muted);
+    font-size: 0.84rem;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .adm-enq-head i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: transparent;
+  }
+
+  .adm-enq li.is-unread .adm-enq-head i {
+    background: var(--accent);
+  }
+
+  .adm-enq li.is-unread .adm-enq-head {
+    color: var(--text);
+  }
+
+  .adm-enq-head strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .adm-enq-head span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .adm-enq-head time {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+  }
+
+  .adm-enq-body {
+    display: grid;
+    gap: 12px;
+    padding: 4px 16px 16px 38px;
+  }
+
+  .adm-enq-meta {
+    margin: 0;
+    font-size: 0.84rem;
+    color: var(--muted);
+  }
+
+  .adm-enq-meta a {
+    color: var(--accent);
+  }
+
+  .adm-enq-msg {
+    margin: 0;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    font-size: 0.92rem;
+  }
+
+  .adm-json {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    background: rgba(4, 10, 18, 0.7);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.55;
+    resize: vertical;
+  }
+
+  .adm-content {
+    display: grid;
+    gap: 10px;
+  }
+
+  .adm-content h2 {
+    margin: 0;
+  }
+
+  @media (max-width: 720px) {
+    .adm-enq-head {
+      grid-template-columns: 10px minmax(0, 1fr) auto;
+    }
+
+    .adm-enq-interest,
+    .adm-enq-snippet {
+      display: none;
+    }
+  }
+}

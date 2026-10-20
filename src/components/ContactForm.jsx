@@ -1,6 +1,7 @@
 import { useId, useState } from 'react'
 import { FiArrowUpRight, FiCheck, FiChevronDown } from 'react-icons/fi'
 import { BOOKING_URL, CONTACT, SERVICES } from '../data'
+import { supabase } from '../lib/supabase'
 
 const INTERESTS = [...SERVICES.map((s) => s.title), 'Something else']
 const EMPTY = { name: '', email: '', phone: '', interest: '', message: '' }
@@ -54,7 +55,7 @@ export default function ContactForm() {
   const uid = useId()
   const [values, setValues] = useState(EMPTY)
   const [errors, setErrors] = useState({})
-  const [status, setStatus] = useState('idle') // idle | opened
+  const [status, setStatus] = useState('idle') // idle | sending | sent | opened
   const [trap, setTrap] = useState('') // spam trap: people never see or fill this
 
   const id = (name) => `${uid}-${name}`
@@ -69,7 +70,7 @@ export default function ContactForm() {
     },
   })
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault()
     const found = validate(values)
     setErrors(found)
@@ -79,24 +80,42 @@ export default function ContactForm() {
       return
     }
     if (trap) {
-      setStatus('opened') // a bot filled the hidden field; send nothing
+      setStatus('sent') // a bot filled the hidden field; pretend it worked and save nothing
       return
     }
-    openEmailApp(values)
-    setStatus('opened')
+    setStatus('sending')
+    const { error } = await supabase.from('enquiries').insert({
+      name: values.name.trim(),
+      email: values.email.trim(),
+      phone: values.phone.trim() || null,
+      interest: values.interest,
+      message: values.message.trim(),
+    })
+    if (error) {
+      // Saving failed (offline, or the table is not set up): hand the message to the visitor's email app instead.
+      openEmailApp(values)
+      setStatus('opened')
+      return
+    }
+    setValues(EMPTY)
+    setStatus('sent')
   }
 
-  if (status === 'opened') {
+  if (status === 'sent' || status === 'opened') {
     return (
       <div className="contact-form cf-done reveal-card" role="status">
         <span className="cf-done-icon">
           <FiCheck aria-hidden="true" />
         </span>
-        <h3>Your email is ready to send.</h3>
-        <p>Your email app should have opened with everything filled in. Just press send. If nothing opened, write to me at {CONTACT.email}.</p>
+        <h3>{status === 'sent' ? 'Thanks, your message is on its way.' : 'Your email is ready to send.'}</h3>
+        <p>
+          {status === 'sent'
+            ? "I've got your details and will reply by email soon."
+            : `Your email app should have opened with everything filled in. Just press send. If nothing opened, write to me at ${CONTACT.email}.`}
+        </p>
         <div className="cf-foot">
           <button type="button" className="btn btn-ghost btn-sm" onClick={() => setStatus('idle')}>
-            Back to the form
+            {status === 'sent' ? 'Send another message' : 'Back to the form'}
           </button>
           <p>
             Prefer to talk?{' '}
@@ -156,8 +175,8 @@ export default function ContactForm() {
 
 
       <div className="cf-foot">
-        <button type="submit" className="btn btn-primary">
-          Send message <FiArrowUpRight aria-hidden="true" />
+        <button type="submit" className="btn btn-primary" disabled={status === 'sending'}>
+          {status === 'sending' ? 'Sending…' : 'Send message'} <FiArrowUpRight aria-hidden="true" />
         </button>
         <p>
           Prefer to talk?{' '}

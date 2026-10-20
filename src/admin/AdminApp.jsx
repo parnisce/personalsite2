@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AdminContext } from './ctx'
 import { CategoriesModal, ProjectModal, RoutineModal } from './Editors'
+import { useCloudSync } from './cloud'
+import ContentPage from './ContentPage'
+import EnquiriesPage from './EnquiriesPage'
+import { useEnquiries } from './enquiries'
 import InsightsPage from './InsightsPage'
 import { LogPage, RoutinesPage } from './OtherPages'
 import TodayPage from './TodayPage'
@@ -10,19 +14,21 @@ import TaskModal from './TaskModal'
 import { buildBackup, parseBackup, toDateStr, useAdminStore, useNow } from './store'
 import './admin.css'
 
-const PAGE_TITLES = { today: 'Today', projects: 'Projects', project: 'Project', routines: 'Routines', insights: 'Insights', log: 'Log' }
+const PAGE_TITLES = { today: 'Today', projects: 'Projects', project: 'Project', routines: 'Routines', insights: 'Insights', log: 'Log', enquiries: 'Enquiries', content: 'Site content' }
 const COLLAPSE_KEY = 'cb-admin-collapsed'
 
 function parseRoute() {
   const [name, id] = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean)
   if (name === 'projects' && id) return { name: 'project', id: decodeURIComponent(id) }
-  return { name: ['today', 'projects', 'routines', 'insights', 'log'].includes(name) ? name : 'projects' }
+  return { name: ['today', 'projects', 'routines', 'insights', 'log', 'enquiries', 'content'].includes(name) ? name : 'projects' }
 }
 
 const isTyping = (el) => el && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))
 
-export default function AdminApp() {
+export default function AdminApp({ user, onSignOut }) {
   const { state, dispatch, saveError } = useAdminStore()
+  const syncStatus = useCloudSync(state, dispatch, user.id)
+  const enquiries = useEnquiries()
   const [route, setRoute] = useState(parseRoute)
   const [editing, setEditing] = useState(null) // { kind: 'task' | 'project' | 'routine' | 'categories', ... }
   const [toastItem, setToastItem] = useState(null)
@@ -197,8 +203,8 @@ export default function AdminApp() {
     })
 
   const ctx = useMemo(
-    () => ({ state, dispatch, today, now, openTask, newTask, newProject, editProject, newRoutine, editRoutine, editCategories, toggleTimer, toast }),
-    [state, dispatch, today, now, openTask, newTask, newProject, editProject, newRoutine, editRoutine, editCategories, toggleTimer, toast],
+    () => ({ state, dispatch, today, now, openTask, newTask, newProject, editProject, newRoutine, editRoutine, editCategories, toggleTimer, toast, enquiries, syncStatus, user, onSignOut }),
+    [enquiries, syncStatus, user, onSignOut, state, dispatch, today, now, openTask, newTask, newProject, editProject, newRoutine, editRoutine, editCategories, toggleTimer, toast],
   )
 
   return (
@@ -219,6 +225,8 @@ export default function AdminApp() {
           {route.name === 'routines' && <RoutinesPage />}
           {route.name === 'insights' && <InsightsPage />}
           {route.name === 'log' && <LogPage />}
+          {route.name === 'enquiries' && <EnquiriesPage />}
+          {route.name === 'content' && <ContentPage />}
         </main>
 
         {editing?.kind === 'task' && (
