@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AdminContext } from './ctx'
 import { CategoriesModal, ProjectModal, RoutineModal } from './Editors'
+import AuditPage from './AuditPage'
 import { useCloudSync } from './cloud'
 import ContentPage from './ContentPage'
 import EnquiriesPage from './EnquiriesPage'
@@ -15,14 +16,14 @@ import TaskModal from './TaskModal'
 import { buildBackup, parseBackup, toDateStr, useAdminStore, useNow } from './store'
 import './admin.css'
 
-const PAGE_TITLES = { today: 'Today', projects: 'Projects', project: 'Project', routines: 'Routines', insights: 'Insights', log: 'Log', enquiries: 'Enquiries', content: 'Site content', resources: 'Resources', resource: 'Resource' }
+const PAGE_TITLES = { today: 'Today', projects: 'Projects', project: 'Project', routines: 'Routines', insights: 'Insights', log: 'Log', enquiries: 'Enquiries', content: 'Site content', resources: 'Resources', resource: 'Resource', audit: 'Internal audit' }
 const COLLAPSE_KEY = 'cb-admin-collapsed'
 
 function parseRoute() {
   const [name, id] = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean)
   if (name === 'projects' && id) return { name: 'project', id: decodeURIComponent(id) }
   if (name === 'resources' && id) return { name: 'resource', id: decodeURIComponent(id) }
-  return { name: ['today', 'projects', 'routines', 'insights', 'log', 'enquiries', 'content', 'resources'].includes(name) ? name : 'projects' }
+  return { name: ['today', 'projects', 'routines', 'insights', 'log', 'enquiries', 'content', 'resources', 'audit'].includes(name) ? name : 'projects' }
 }
 
 const isTyping = (el) => el && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))
@@ -229,6 +230,7 @@ export default function AdminApp({ user, onSignOut }) {
           {route.name === 'log' && <LogPage />}
           {route.name === 'enquiries' && <EnquiriesPage />}
           {route.name === 'content' && <ContentPage />}
+          {route.name === 'audit' && <AuditPage />}
           {route.name === 'resources' && <ResourcesList />}
           {route.name === 'resource' && <ResourceEditor key={route.id} id={route.id} />}
         </main>

@@ -1,0 +1,311 @@
+// Internal audit of the website and admin, carried out on 21 October 2026 against the code in
+// this repository and the Supabase schema in supabase/schema.sql. It is a snapshot: edit this
+// file as findings are fixed (set status to 'fixed') and re-run the checks before each review.
+
+export const AUDIT = {
+  title: 'Website & admin internal audit',
+  date: '2026-10-21',
+  scope: 'Public site (home, Resources, Free Tools), admin task manager, Supabase schema and policies, build and dependencies.',
+  method: 'Code review, npm audit, production build, lint run and a read-through of the Supabase row-level-security policies. Nothing was tested against production traffic.',
+}
+
+export const EVIDENCE = [
+  { check: 'npm audit (dependencies)', result: '0 known vulnerabilities (0 critical, 0 high, 0 moderate, 0 low)', ok: true },
+  { check: 'Production build', result: 'Passes; four pages built (home, tools, resources, admin)', ok: true },
+  { check: 'Lint (oxlint)', result: '0 errors, 14 warnings (React effect and fast-refresh rules)', ok: false },
+  { check: 'Automated tests', result: 'None in the project', ok: false },
+  { check: 'Outdated packages', result: '2 minor updates available (@react-three/postprocessing, oxlint)', ok: true },
+  { check: 'Secrets in the repository', result: 'None found; only the public Supabase publishable key is committed', ok: true },
+]
+
+export const AREAS = ['Security', 'SEO', 'Performance', 'Accessibility', 'Code & process']
+export const SEVERITIES = ['high', 'medium', 'low', 'info']
+
+// status: 'open' needs action, 'fixed' was resolved, 'pass' is a check that came out fine.
+export const FINDINGS = [
+  // ---- Security
+  {
+    id: 'SEC-1',
+    area: 'Security',
+    severity: 'medium',
+    status: 'open',
+    title: 'Write access is granted to any signed-in user',
+    detail: 'The policies on site_content, enquiries and resources allow every authenticated user to read and write (using (true)). That is only safe while the admin account is the only account.',
+    action: 'In Supabase turn off "Allow new users to sign up" and confirm there is a single user. Better: restrict the policies to your user id or email so a future extra user cannot edit the site.',
+  },
+  {
+    id: 'SEC-2',
+    area: 'Security',
+    severity: 'medium',
+    status: 'open',
+    title: 'Contact form can be spammed',
+    detail: 'Anyone can insert into the enquiries table with the public key. The only defence is a hidden honeypot field, so a script that calls the API directly is not stopped.',
+    action: 'Add a CAPTCHA such as Cloudflare Turnstile checked by an edge function, or rate-limit inserts per IP.',
+  },
+  {
+    id: 'SEC-3',
+    area: 'Security',
+    severity: 'low',
+    status: 'open',
+    title: 'No security headers or Content-Security-Policy',
+    detail: 'The site is static and sets no CSP, X-Frame-Options or Referrer-Policy of its own. These come from the host.',
+    action: 'Configure headers at the host (CSP limited to self, Supabase, Google Fonts and GitHub API; frame-ancestors none).',
+  },
+  {
+    id: 'SEC-4',
+    area: 'Security',
+    severity: 'low',
+    status: 'open',
+    title: 'Visitor counter can be inflated',
+    detail: 'The "people here" count uses a public Realtime channel, so anyone can join it from a script and push the number up.',
+    action: 'Acceptable for a vanity counter. Do not use the number for anything that matters.',
+  },
+  {
+    id: 'SEC-5',
+    area: 'Security',
+    severity: 'low',
+    status: 'open',
+    title: 'GitHub Fetch is limited to 60 requests an hour',
+    detail: 'The Resources editor calls GitHub unauthenticated from the browser, so heavy use hits the rate limit and Fetch fails until the hour resets.',
+    action: 'Wait it out, or move the call to a Supabase edge function using a GitHub token.',
+  },
+  {
+    id: 'SEC-6',
+    area: 'Security',
+    severity: 'info',
+    status: 'pass',
+    title: 'Row-level security is on for every table',
+    detail: 'admin_state is private to its owner; enquiries accept inserts only from the public; resources and site_content are readable by the public only when published or by design.',
+    action: '',
+  },
+  {
+    id: 'SEC-7',
+    area: 'Security',
+    severity: 'info',
+    status: 'pass',
+    title: 'Markdown from Resources is sanitised',
+    detail: 'Article bodies are rendered with marked and cleaned with DOMPurify before display; external links open with rel="noopener noreferrer".',
+    action: '',
+  },
+  {
+    id: 'SEC-8',
+    area: 'Security',
+    severity: 'info',
+    status: 'pass',
+    title: 'Sign-out clears the cached admin data',
+    detail: 'The task data cached in the browser is removed when you sign out, so a shared computer does not keep it.',
+    action: '',
+  },
+
+  // ---- SEO
+  {
+    id: 'SEO-1',
+    area: 'SEO',
+    severity: 'high',
+    status: 'open',
+    title: 'Home page has no meta description, Open Graph or Twitter tags',
+    detail: 'index.html only sets a title. Search results and link previews (LinkedIn, WhatsApp, Slack) will show a plain or guessed snippet and no image.',
+    action: 'Add a description, canonical URL, og:title, og:description, og:image and twitter:card to index.html.',
+  },
+  {
+    id: 'SEO-2',
+    area: 'SEO',
+    severity: 'high',
+    status: 'open',
+    title: 'No robots.txt or sitemap.xml',
+    detail: 'public/ contains only icons. Crawlers get no sitemap and no explicit guidance (for example to keep /admin/ out).',
+    action: 'Add public/robots.txt (disallow /admin/) and a sitemap.xml listing /, /resources/ and /tools/.',
+  },
+  {
+    id: 'SEO-3',
+    area: 'SEO',
+    severity: 'medium',
+    status: 'open',
+    title: 'Resources articles are not separately indexable',
+    detail: 'Articles live at /resources/#/slug and are drawn in the browser. Search engines treat everything after # as one page, and each article\'s title and description are set by JavaScript.',
+    action: 'Pre-render each article to its own static page (/resources/slug/) at build time, or serve it from a host that supports rewrites, and list them in the sitemap.',
+  },
+  {
+    id: 'SEO-4',
+    area: 'SEO',
+    severity: 'low',
+    status: 'open',
+    title: 'No structured data',
+    detail: 'There is no JSON-LD (Person, WebSite or Article) to help search engines understand the pages.',
+    action: 'Add Person/WebSite JSON-LD to the home page and Article JSON-LD to Resources articles.',
+  },
+
+  // ---- Performance
+  {
+    id: 'PERF-1',
+    area: 'Performance',
+    severity: 'medium',
+    status: 'open',
+    title: 'Home page waits up to 2.5 seconds for Supabase before rendering',
+    detail: 'main.jsx fetches the editable site content first so animations are built on the final page. On a slow connection or if Supabase is slow, the page stays blank for up to 2.5 seconds.',
+    action: 'Render immediately with the built-in content, then swap in saved content, or cache the last content in localStorage and refresh it in the background.',
+  },
+  {
+    id: 'PERF-2',
+    area: 'Performance',
+    severity: 'medium',
+    status: 'open',
+    title: '3D logo bundle is about 1 MB',
+    detail: 'The Three.js scene (with post-processing) is loaded on the home page. It is lazy loaded and has a CSS fallback, but it is the largest part of the first visit on mobile.',
+    action: 'Skip the 3D scene on small screens and slow connections, or load it after the page is interactive.',
+  },
+  {
+    id: 'PERF-3',
+    area: 'Performance',
+    severity: 'low',
+    status: 'open',
+    title: 'Supabase client (~210 KB) ships to every public page',
+    detail: 'It is needed for content, the contact form and the visitor counter, but it adds weight before any of those run.',
+    action: 'Load it lazily after first paint for the visitor counter and on form submit.',
+  },
+  {
+    id: 'PERF-4',
+    area: 'Performance',
+    severity: 'low',
+    status: 'open',
+    title: 'Unused assets and a large logo file',
+    detail: 'src/assets/hero.png, react.svg and vite.svg are not used. logo.webp is about 129 KB, which is large for a logo.',
+    action: 'Delete the unused files and export the logo as an optimised SVG or a smaller webp.',
+  },
+  {
+    id: 'PERF-5',
+    area: 'Performance',
+    severity: 'info',
+    status: 'pass',
+    title: 'Heavy tool libraries load only when needed',
+    detail: 'PDF, HEIC, TIFF and background-removal code is split into separate chunks and downloads only when a visitor opens that tool.',
+    action: '',
+  },
+
+  // ---- Accessibility
+  {
+    id: 'A11Y-1',
+    area: 'Accessibility',
+    severity: 'medium',
+    status: 'open',
+    title: 'Colour contrast has not been measured',
+    detail: 'Muted grey text and small mono labels on the dark navy background (admin and public) were not checked against WCAG AA.',
+    action: 'Run a contrast check (axe or Lighthouse) and raise the muted colour where it falls below 4.5:1.',
+  },
+  {
+    id: 'A11Y-2',
+    area: 'Accessibility',
+    severity: 'low',
+    status: 'open',
+    title: 'Drag-and-drop board relies on pointer and keyboard sensors only',
+    detail: 'Keyboard dragging is supported, but screen-reader announcements for moves were not reviewed.',
+    action: 'Test the task board with a screen reader and add live announcements if missing.',
+  },
+  {
+    id: 'A11Y-3',
+    area: 'Accessibility',
+    severity: 'info',
+    status: 'pass',
+    title: 'Motion preferences, labels and form errors are handled',
+    detail: 'prefers-reduced-motion is respected in the animations; every image has alt text; form fields have labels and errors use role="alert".',
+    action: '',
+  },
+
+  // ---- Code & process
+  {
+    id: 'CODE-1',
+    area: 'Code & process',
+    severity: 'medium',
+    status: 'open',
+    title: 'No automated tests or CI',
+    detail: 'There are no unit or end-to-end tests and no GitHub Action that builds and lints each pull request. Regressions depend on manual checking.',
+    action: 'Add a GitHub Actions workflow (install, lint, build) and a few tests for the store reducer and the repo-draft generator.',
+  },
+  {
+    id: 'CODE-2',
+    area: 'Code & process',
+    severity: 'medium',
+    status: 'open',
+    title: 'Several stacked branches and pull requests',
+    detail: 'Recent work was pushed as a chain of branches that build on each other, and main still holds the first commit with all Free Tools. Merging out of order will cause conflicts.',
+    action: 'Merge the newest branch that contains everything, close the older pull requests, and delete merged branches.',
+  },
+  {
+    id: 'CODE-3',
+    area: 'Code & process',
+    severity: 'medium',
+    status: 'open',
+    title: 'Database setup is a manual script',
+    detail: 'supabase/schema.sql is run by hand and re-run after each change. There is no migration history, so it is hard to know which version a database is on.',
+    action: 'Move to Supabase migrations (supabase db push) so every change is versioned.',
+  },
+  {
+    id: 'CODE-4',
+    area: 'Code & process',
+    severity: 'low',
+    status: 'open',
+    title: 'README is still the Vite template',
+    detail: 'It does not explain how to run the project, the Supabase setup, the admin sign-in or the deploy steps.',
+    action: 'Rewrite the README with setup, environment variables, schema steps and the page map.',
+  },
+  {
+    id: 'CODE-5',
+    area: 'Code & process',
+    severity: 'low',
+    status: 'open',
+    title: '14 lint warnings',
+    detail: 'Mostly "setState inside an effect" and "fast refresh only works when a file only exports components". They do not break anything today.',
+    action: 'Clear them gradually; none block a release.',
+  },
+  {
+    id: 'CODE-6',
+    area: 'Code & process',
+    severity: 'low',
+    status: 'open',
+    title: 'Task data is one JSON row with last-write-wins',
+    detail: 'The whole task manager is saved as a single record. Editing on two devices at once keeps only the latest save, and there is no history beyond manual backups.',
+    action: 'Export a backup regularly, or move tasks to their own rows with timestamps if you start using it on several devices at once.',
+  },
+]
+
+const rank = { high: 0, medium: 1, low: 2, info: 3 }
+export const sortFindings = (list) => [...list].sort((a, b) => rank[a.severity] - rank[b.severity] || a.id.localeCompare(b.id))
+
+export function summarise(list = FINDINGS) {
+  const open = list.filter((f) => f.status === 'open')
+  return {
+    open: open.length,
+    high: open.filter((f) => f.severity === 'high').length,
+    medium: open.filter((f) => f.severity === 'medium').length,
+    low: open.filter((f) => f.severity === 'low').length,
+    passed: list.filter((f) => f.status === 'pass').length,
+    fixed: list.filter((f) => f.status === 'fixed').length,
+    total: list.length,
+  }
+}
+
+export function toMarkdown(list = FINDINGS) {
+  const s = summarise(list)
+  const lines = [
+    `# ${AUDIT.title}`,
+    '',
+    `Date: ${AUDIT.date}`,
+    `Scope: ${AUDIT.scope}`,
+    `Method: ${AUDIT.method}`,
+    '',
+    `Open findings: ${s.open} (${s.high} high, ${s.medium} medium, ${s.low} low). Checks passed: ${s.passed}.`,
+    '',
+    '## Checks run',
+    ...EVIDENCE.map((e) => `- ${e.ok ? 'OK' : 'Attention'}: ${e.check} - ${e.result}`),
+  ]
+  AREAS.forEach((area) => {
+    const items = sortFindings(list.filter((f) => f.area === area))
+    if (!items.length) return
+    lines.push('', `## ${area}`)
+    items.forEach((f) => {
+      lines.push('', `### ${f.id} [${f.status === 'pass' ? 'pass' : f.severity}] ${f.title}`, f.detail)
+      if (f.action) lines.push(`Recommended: ${f.action}`)
+    })
+  })
+  return lines.join('\n')
+}
