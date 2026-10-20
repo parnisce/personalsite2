@@ -2,10 +2,10 @@ import { FiArrowUpRight, FiStar } from 'react-icons/fi'
 import { TbBrandGithub, TbCode, TbHistory, TbScale } from 'react-icons/tb'
 import { formatCount, readingMinutes, renderMarkdown, shortDate, timeAgo } from '../lib/resources'
 
-export function TagList({ tags }) {
+export function TagList({ tags, compact = false }) {
   if (!tags?.length) return null
   return (
-    <ul className="res-tags">
+    <ul className={`res-tags${compact ? ' is-compact' : ''}`}>
       {tags.map((t) => (
         <li key={t}>{t}</li>
       ))}
@@ -78,18 +78,21 @@ export function ResourceArticle({ resource }) {
 export function ResourceCard({ resource }) {
   return (
     <a className="res-card" href={`#/${resource.slug}`}>
-      <TagList tags={resource.tags} />
+      <TagList tags={resource.tags} compact />
       <h2>{resource.title}</h2>
       <p>{resource.summary}</p>
       <span className="res-card-foot">
-        <span>
+        <span className="res-card-repo">
           {resource.github?.full_name && (
             <>
-              <FiStar aria-hidden="true" /> {formatCount(resource.github.stars)} · {resource.github.full_name}
+              <FiStar aria-hidden="true" />
+              <span>
+                {formatCount(resource.github.stars)} · {resource.github.full_name}
+              </span>
             </>
           )}
         </span>
-        <span>
+        <span className="res-card-date">
           {shortDate(resource.published_at)} · {readingMinutes(resource.body ?? '')} min
         </span>
       </span>

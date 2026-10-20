@@ -30,22 +30,49 @@
     max-width: 620px;
   }
 
-  .res-filters {
+  .res-filterwrap {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    align-items: flex-start;
+    gap: 10px 14px;
     margin-bottom: 22px;
   }
 
+  .res-filters {
+    display: flex;
+    flex: 1 1 520px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* Two rows of 26px chips and one 6px gap. */
+  .res-filters.is-collapsed {
+    max-height: 58px;
+    overflow: hidden;
+  }
+
   .res-filters button {
-    padding: 8px 15px;
+    height: 26px;
+    padding: 0 11px;
     border-radius: 999px;
     border: 1px solid var(--line);
     background: var(--panel);
     color: var(--muted);
-    font-size: 14px;
+    font-size: 12.5px;
+    line-height: 1;
     cursor: pointer;
     transition: color 0.2s, border-color 0.2s;
+  }
+
+  .res-more {
+    height: 26px;
+    padding: 0 4px;
+    border: 0;
+    background: none;
+    color: var(--cyan);
+    font-size: 12.5px;
+    cursor: pointer;
+    white-space: nowrap;
   }
 
   .res-filters button:hover {
@@ -75,18 +102,26 @@
   .res-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
   .res-tags li {
-    padding: 5px 12px;
-    border-radius: 8px;
-    font-size: 12.5px;
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    line-height: 18px;
     color: var(--muted);
     background: rgba(255, 255, 255, 0.06);
+    white-space: nowrap;
+  }
+
+  /* On cards the tags stop after two rows of 24px chips and one 6px gap. */
+  .res-tags.is-compact {
+    max-height: 54px;
+    overflow: hidden;
   }
 
   .res-card {
@@ -127,6 +162,7 @@
 
   .res-card-foot {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     gap: 12px;
     margin-top: auto;
@@ -136,8 +172,26 @@
     color: var(--muted);
   }
 
-  .res-card-foot svg {
-    vertical-align: -2px;
+  .res-card-repo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .res-card-repo svg {
+    flex: none;
+  }
+
+  .res-card-repo > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .res-card-date {
+    flex: none;
+    white-space: nowrap;
   }
 
   .res-back {

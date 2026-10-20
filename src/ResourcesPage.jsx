@@ -42,6 +42,7 @@ function useAsync(load, deps) {
 function List() {
   const { status, data } = useAsync(listPublished, [])
   const [tag, setTag] = useState('')
+  const [allTags, setAllTags] = useState(false)
   useEffect(() => {
     document.title = TITLE
   }, [])
@@ -61,12 +62,19 @@ function List() {
       </section>
 
       {tags.length > 1 && (
-        <div className="res-filters" role="group" aria-label="Filter by topic">
-          {['', ...tags].map((t) => (
-            <button key={t || 'all'} type="button" className={tag === t ? 'is-active' : ''} aria-pressed={tag === t} onClick={() => setTag(t)}>
-              {t || 'All'}
+        <div className="res-filterwrap">
+          <div className={`res-filters${allTags ? '' : ' is-collapsed'}`} role="group" aria-label="Filter by topic">
+            {['', ...tags].map((t) => (
+              <button key={t || 'all'} type="button" className={tag === t ? 'is-active' : ''} aria-pressed={tag === t} onClick={() => setTag(t)}>
+                {t || 'All'}
+              </button>
+            ))}
+          </div>
+          {tags.length > 8 && (
+            <button type="button" className="res-more" aria-expanded={allTags} onClick={() => setAllTags((v) => !v)}>
+              {allTags ? 'Show fewer topics' : `Show all ${tags.length} topics`}
             </button>
-          ))}
+          )}
         </div>
       )}
 
