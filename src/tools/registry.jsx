@@ -34,11 +34,6 @@ const SPECIAL = {
   'color-contrast-checker': group(() => import('./ColourTools'), 'ColourContrastChecker'),
   'hex-to-rgb-converter': group(() => import('./ColourTools'), 'HexToRgb'),
   'rgb-to-hex-converter': group(() => import('./ColourTools'), 'RgbToHex'),
-
-  'video-transcriber': group(() => import('./TranscribeTools'), 'VideoTranscriber'),
-  'subtitle-generator': group(() => import('./TranscribeTools'), 'SubtitleGenerator'),
-  'audio-transcriber': group(() => import('./TranscribeTools'), 'AudioTranscriber'),
-  'extract-audio': group(() => import('./TranscribeTools'), 'ExtractAudio'),
 }
 
 // Returns the screen for a tool (a lazy component and its props), or null if there isn't one.
