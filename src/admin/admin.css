@@ -3678,3 +3678,109 @@
     border-color: #bbb !important;
   }
 }
+
+/* ---------------------------------------------------------------- Admin: Analytics */
+@layer components {
+  .adm-analytics {
+    display: grid;
+    gap: 16px;
+    align-content: start;
+  }
+
+  .adm-daybars {
+    display: grid;
+    gap: 3px;
+    align-items: end;
+    height: 150px;
+  }
+
+  .adm-daybars span {
+    display: flex;
+    align-items: flex-end;
+    height: 100%;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .adm-daybars i {
+    display: block;
+    width: 100%;
+    min-height: 2px;
+    border-radius: 3px;
+    background: var(--accent);
+  }
+
+  .adm-daybars .is-today i {
+    background: #7cf4ff;
+  }
+
+  .adm-analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .adm-toplist ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 4px;
+  }
+
+  .adm-toplist li {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    overflow: hidden;
+  }
+
+  .adm-toplist-bar {
+    position: absolute;
+    inset: 0 auto 0 0;
+    background: var(--accent-soft);
+    z-index: 0;
+  }
+
+  .adm-toplist-label,
+  .adm-toplist li b {
+    position: relative;
+    z-index: 1;
+  }
+
+  .adm-toplist-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .adm-toplist li b {
+    font-family: var(--mono);
+    font-weight: 600;
+  }
+
+  .adm-exclude {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 0.88rem;
+    cursor: pointer;
+  }
+
+  .adm-exclude input {
+    margin-top: 3px;
+    accent-color: var(--accent);
+  }
+
+  .adm-exclude small {
+    display: block;
+    margin-top: 2px;
+    color: var(--muted);
+  }
+}

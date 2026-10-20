@@ -2,6 +2,7 @@ import { useId, useState } from 'react'
 import { FiArrowUpRight, FiCheck, FiChevronDown } from 'react-icons/fi'
 import { BOOKING_URL, CONTACT, SERVICES } from '../data'
 import { supabase } from '../lib/supabase'
+import { track } from '../lib/track'
 
 const INTERESTS = [...SERVICES.map((s) => s.title), 'Something else']
 const EMPTY = { name: '', email: '', phone: '', interest: '', message: '' }
@@ -97,6 +98,7 @@ export default function ContactForm() {
       setStatus('opened')
       return
     }
+    track('contact_submit', values.interest)
     setValues(EMPTY)
     setStatus('sent')
   }

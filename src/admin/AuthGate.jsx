@@ -1,6 +1,7 @@
 import { useEffect, useId, useState } from 'react'
 import logo from '../assets/logo.webp'
 import { supabase } from '../lib/supabase'
+import { EXCLUDE_KEY } from '../lib/track'
 import { STORAGE_KEY } from './store'
 import './admin.css'
 
@@ -67,6 +68,15 @@ export default function AuthGate({ children }) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session))
     const { data } = supabase.auth.onAuthStateChange((_event, next) => setSession(next))
+    // The first time you sign in on a browser, leave it out of the analytics (changeable on the Analytics page).
+    try {
+      if (!localStorage.getItem('cb-track-decided')) {
+        localStorage.setItem('cb-track-decided', '1')
+        localStorage.setItem(EXCLUDE_KEY, '1')
+      }
+    } catch {
+      // No storage, nothing to remember.
+    }
     return () => data.subscription.unsubscribe()
   }, [])
 
