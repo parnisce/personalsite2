@@ -5,6 +5,9 @@ import {
   TbClockHour4,
   TbDownload,
   TbExternalLink,
+  TbFileText,
+  TbInbox,
+  TbLogout,
   TbFolder,
   TbLayoutSidebar,
   TbPlayerStopFilled,
@@ -19,6 +22,13 @@ import { CONTACT } from '../data'
 import { useAdmin } from './ctx'
 import { DAY_LABELS, DAY_NAMES, categoryTimeThisWeek, formatClock, formatDuration, weekActivity } from './store'
 import { CategoryDot } from './ui'
+
+const SYNC_NOTE = {
+  loading: 'Connecting to Supabase…',
+  saving: 'Saving to Supabase…',
+  synced: 'All changes saved to Supabase.',
+  error: 'Could not reach Supabase. Changes stay in this browser and sync when it is back. Run supabase/schema.sql if you have not yet.',
+}
 
 const NAV = [
   { id: 'today', label: 'Today', Icon: TbSun },
@@ -85,7 +95,7 @@ function TimerPill() {
 }
 
 export default function Sidebar({ route, collapsed, onToggle, onExport, onImport }) {
-  const { state, today, newTask, newProject, newRoutine, editCategories } = useAdmin()
+  const { state, today, newTask, newProject, newRoutine, editCategories, enquiries, syncStatus, user, onSignOut } = useAdmin()
   const week = weekActivity(state, today)
   const catTime = categoryTimeThisWeek(state, today)
   const active = route.name === 'project' ? 'projects' : route.name
@@ -137,6 +147,15 @@ export default function Sidebar({ route, collapsed, onToggle, onExport, onImport
       <div className="adm-side-extra">
         <p className="adm-caption">Website</p>
         <nav className="adm-nav" aria-label="Website">
+          <a href="#/enquiries" className={active === 'enquiries' ? 'is-active' : ''} title={collapsed ? 'Enquiries' : undefined}>
+            <TbInbox aria-hidden="true" />
+            <span>Enquiries</span>
+            {enquiries.unread > 0 && <b className="adm-badge">{enquiries.unread}</b>}
+          </a>
+          <a href="#/content" className={active === 'content' ? 'is-active' : ''} title={collapsed ? 'Site content' : undefined}>
+            <TbFileText aria-hidden="true" />
+            <span>Site content</span>
+          </a>
           <a href="/" title={collapsed ? 'View site' : undefined}>
             <TbExternalLink aria-hidden="true" />
             <span>View site</span>
@@ -179,7 +198,7 @@ export default function Sidebar({ route, collapsed, onToggle, onExport, onImport
           </span>
           <span className="adm-profile-text">
             <strong>Cyryl</strong>
-            <small>{CONTACT.email}</small>
+            <small>{user.email ?? CONTACT.email}</small>
           </span>
           <Menu
             label="Settings"
@@ -199,7 +218,10 @@ export default function Sidebar({ route, collapsed, onToggle, onExport, onImport
             <a role="menuitem" href="/">
               <TbArrowLeft aria-hidden="true" /> Back to site
             </a>
-            <p className="adm-menu-note">Saved in this browser only. Export a backup now and then.</p>
+            <button type="button" role="menuitem" onClick={onSignOut}>
+              <TbLogout aria-hidden="true" /> Sign out
+            </button>
+            <p className="adm-menu-note">{SYNC_NOTE[syncStatus]}</p>
           </Menu>
         </div>
       </div>
