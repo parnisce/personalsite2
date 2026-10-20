@@ -1,7 +1,7 @@
 // The Free Tools directory. Every tool runs in the visitor's browser on this site (see
 // src/tools/registry.jsx); a tool opens at /tools/#/<slug>.
 
-export const TOOL_CATEGORIES = ['Image', 'Converters', 'PDF', 'Colour', 'Dev & text', 'Writing', 'Video & audio']
+export const TOOL_CATEGORIES = ['Image', 'Converters', 'PDF', 'Colour']
 
 // [slug, category, name, description, note?]  (`note` is extra small print shown on the tool page)
 const RAW = [
@@ -56,8 +56,6 @@ const RAW = [
   ['pdf-to-image', 'PDF', 'PDF to Image', 'Render every PDF page to a PNG image and download them in a ZIP.'],
   ['markdown-to-pdf', 'PDF', 'Markdown to PDF', 'Turn Markdown text into a clean, downloadable PDF document.'],
   ['html-to-pdf', 'PDF', 'HTML to PDF', 'Extract the readable text from HTML and save it as a PDF document.'],
-  ['image-to-base64', 'Dev & text', 'Image to Base64', 'Encode an image as a Base64 data URI to paste into HTML or CSS.'],
-  ['base64-to-image', 'Dev & text', 'Base64 to Image', 'Paste a Base64 string or data URI and download it as an image.'],
   ['color-picker-from-image', 'Colour', 'Colour Picker from Image', "Click anywhere on an image to read that pixel's HEX and RGB."],
   ['color-palette-extractor', 'Colour', 'Colour Palette Extractor', 'Pull the main colours out of an image and copy their HEX values.'],
   ['color-palette-generator', 'Colour', 'Colour Palette Generator', 'Build a matching five-colour palette from one starting colour.'],
@@ -65,15 +63,6 @@ const RAW = [
   ['color-contrast-checker', 'Colour', 'Colour Contrast Checker', 'Check two colours against the WCAG AA and AAA contrast rules.'],
   ['hex-to-rgb-converter', 'Colour', 'HEX to RGB', 'Convert a HEX colour code to RGB and HSL.'],
   ['rgb-to-hex-converter', 'Colour', 'RGB to HEX', 'Convert RGB values to a HEX colour code.'],
-  ['aspect-ratio-calculator', 'Dev & text', 'Aspect Ratio Calculator', 'Simplify width and height to a ratio, or find the missing dimension.'],
-  ['text-compare', 'Dev & text', 'Text Compare', 'Paste two versions of a text and see what changed, line by line.'],
-  ['grammar-checker', 'Writing', 'Grammar Checker', 'Check your writing for grammar, spelling and punctuation mistakes, then fix them with one click.'],
-  ['spell-checker', 'Writing', 'Spell Checker', 'Find misspelled words and fix them, in American, British, Australian, Canadian or Indian English.'],
-  ['punctuation-checker', 'Writing', 'Punctuation & Capitalisation Checker', 'Catch missing capital letters, stray spaces, repeated words and punctuation slips.'],
-  ['video-transcriber', 'Video & audio', 'Video Transcriber', 'Turn the speech in a video into text with timestamps, then copy it or download it as TXT, SRT or VTT.', 'The speech model downloads the first time you use it (from about 40 MB up to a few hundred MB, depending on the accuracy you pick) and is then kept in your browser.'],
-  ['subtitle-generator', 'Video & audio', 'Subtitle Generator (SRT & VTT)', "Create subtitle files from a video's speech, ready for YouTube, Vimeo or any video editor.", 'The speech model downloads the first time you use it (from about 40 MB up to a few hundred MB, depending on the accuracy you pick) and is then kept in your browser.'],
-  ['audio-transcriber', 'Video & audio', 'Audio Transcriber', 'Turn a recording, voice note, interview or podcast into text.', 'The speech model downloads the first time you use it (from about 40 MB up to a few hundred MB, depending on the accuracy you pick) and is then kept in your browser.'],
-  ['extract-audio', 'Video & audio', 'Extract Audio from Video', 'Pull the sound out of a video and save it as a WAV file.'],
 ]
 
 export const TOOLS = RAW.map(([slug, category, name, description, note]) => ({

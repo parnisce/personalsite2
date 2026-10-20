@@ -5,14 +5,11 @@ import {
   TbArrowLeft,
   TbArrowsExchange,
   TbArrowUpRight,
-  TbCode,
   TbFileTypePdf,
   TbPalette,
-  TbPencilCheck,
   TbPhoto,
   TbSearch,
   TbShieldLock,
-  TbVideo,
   TbX,
 } from 'react-icons/tb'
 import { Footer, Header } from './components/SiteChrome'
@@ -27,9 +24,6 @@ const CATEGORY_ICONS = {
   Converters: TbArrowsExchange,
   PDF: TbFileTypePdf,
   Colour: TbPalette,
-  'Dev & text': TbCode,
-  Writing: TbPencilCheck,
-  'Video & audio': TbVideo,
 }
 
 const COUNTS = TOOLS.reduce((acc, t) => ({ ...acc, [t.category]: (acc[t.category] ?? 0) + 1 }), {})
@@ -137,7 +131,7 @@ function Directory() {
           <span className="accent">No uploads, no sign&#8209;up.</span>
         </h1>
         <p className="lead">
-          Resize, convert and edit images, check your writing, transcribe audio and video, work with colour, and handle everyday dev tasks, all inside your browser.
+          Resize, convert and edit images, work with PDFs and colour, all inside your browser.
         </p>
         <p className="privacy-note">
           <TbShieldLock /> Files are processed on your device and never uploaded.
