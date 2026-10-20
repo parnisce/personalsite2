@@ -3784,3 +3784,278 @@
     color: var(--muted);
   }
 }
+
+/* ---------------------------------------------------------------- Admin: Routines redesign */
+@layer components {
+  .adm-routines-page {
+    display: grid;
+    gap: 16px;
+    align-content: start;
+  }
+
+  .adm-rt-summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px;
+    padding: 22px 26px;
+  }
+
+  .adm-rt-sum-main {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .adm-rt-sum-met {
+    padding-left: 26px;
+    border-left: 1px solid var(--line);
+  }
+
+  .adm-rt-summary .adm-big {
+    margin: 4px 0;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+  }
+
+  .adm-rt-summary small {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .adm-rt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
+    gap: 16px;
+  }
+
+  .adm-rt-card {
+    display: grid;
+    gap: 16px;
+  }
+
+  .adm-rt-card > header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .adm-rt-title {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .adm-rt-title h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .adm-rt-title p {
+    margin: 4px 0 0;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .adm-rt-tools {
+    display: flex;
+    gap: 2px;
+    align-self: flex-start;
+  }
+
+  .adm-rt-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+
+  .adm-rt-days > div {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .adm-rt-days > div.is-today {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .adm-rt-days button {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    max-width: 40px;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: rgba(255, 255, 255, 0.04);
+    color: #021320;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.2s;
+  }
+
+  .adm-rt-days button.is-scheduled {
+    border-color: var(--line-2);
+  }
+
+  .adm-rt-days button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: var(--accent);
+  }
+
+  .adm-rt-days button:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+
+  .adm-rt-days button.is-done {
+    background: var(--accent);
+    border-color: var(--accent);
+    opacity: 1;
+    box-shadow: 0 6px 18px rgba(0, 229, 255, 0.25);
+  }
+
+  .adm-rt-card > footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 0.84rem;
+    color: var(--muted);
+  }
+
+  .adm-rt-progress {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .adm-rt-progress b {
+    color: var(--text);
+  }
+
+  .adm-rt-ring .adm-ring-track {
+    stroke: rgba(255, 255, 255, 0.1);
+  }
+
+  .adm-rt-ring .adm-ring-value {
+    stroke: var(--accent);
+  }
+
+  .adm-donebtn:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .adm-rt-new {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 8px;
+    min-height: 220px;
+    border: 1px dashed var(--line-2);
+    border-radius: 16px;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .adm-rt-new:hover {
+    color: var(--accent);
+    border-color: rgba(0, 229, 255, 0.45);
+  }
+
+  .adm-rt-new svg {
+    font-size: 1.4rem;
+  }
+
+  /* ---- routine dialog */
+  .adm-modal-sub {
+    margin: 4px 0 0;
+    font-size: 0.84rem;
+    color: var(--muted);
+  }
+
+  .adm-catpills,
+  .adm-numpick {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .adm-catpills button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--line-2);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text);
+    font-size: 0.86rem;
+    cursor: pointer;
+  }
+
+  .adm-catpills i {
+    width: 9px;
+    height: 9px;
+    border-radius: 3px;
+    background: var(--c);
+  }
+
+  .adm-catpills button.is-active {
+    border-color: var(--c);
+    background: color-mix(in srgb, var(--c) 14%, transparent);
+  }
+
+  .adm-numpick {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-top: 10px;
+  }
+
+  .adm-numpick button {
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--line-2);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .adm-numpick button.is-active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #021320;
+    font-weight: 700;
+  }
+
+  .adm-two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  @media (max-width: 760px) {
+    .adm-rt-summary {
+      grid-template-columns: 1fr;
+    }
+
+    .adm-rt-sum-met {
+      padding: 16px 0 0;
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .adm-two {
+      grid-template-columns: 1fr;
+    }
+  }
+}

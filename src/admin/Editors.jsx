@@ -2,9 +2,12 @@ import { useId, useState } from 'react'
 import { TbPlus, TbTrash } from 'react-icons/tb'
 import { useAdmin } from './ctx'
 import Modal from './Modal'
-import { CATEGORY_COLORS, DAY_LABELS, DAY_NAMES, makeProject, makeRoutine, uid } from './store'
+import { CATEGORY_COLORS, DAY_LABELS, DAY_NAMES, makeProject, makeRoutine, parseMinutes, uid } from './store'
+import { Segmented } from './ui'
 
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b)
+
+const formatMinutesText = (m) => (m % 60 === 0 ? `${m / 60}h` : m < 60 ? `${m}m` : `${Math.floor(m / 60)}h${m % 60}`)
 
 function CategorySelect({ id, value, onChange }) {
   const { state } = useAdmin()
@@ -182,13 +185,15 @@ export function CategoriesModal({ onSave, onClose }) {
 export function RoutineModal({ routine, onSave, onDelete, onClose }) {
   const { state } = useAdmin()
   const isNew = !routine
-  const [initial] = useState(() => routine ?? makeRoutine({ categoryId: state.categories[0].id }))
+  const [initial] = useState(() => routine ?? makeRoutine({ categoryId: state.categories[0].id, mode: 'times', perWeek: 3, days: [] }))
   const [draft, setDraft] = useState(initial)
+  const [minutesText, setMinutesText] = useState(() => (initial.minutes ? formatMinutesText(initial.minutes) : ''))
   const [error, setError] = useState('')
   const base = useId()
   const id = (n) => `${base}-${n}`
 
   const toggleDay = (d) => setDraft((r) => ({ ...r, days: r.days.includes(d) ? r.days.filter((x) => x !== d) : [...r.days, d].sort() }))
+  const minutes = parseMinutes(minutesText)
 
   const submit = (e) => {
     e.preventDefault()
@@ -197,18 +202,24 @@ export function RoutineModal({ routine, onSave, onDelete, onClose }) {
       document.getElementById(id('name'))?.focus()
       return
     }
-    if (!draft.days.length) {
+    if (draft.mode === 'days' && !draft.days.length) {
       setError('Pick at least one day.')
       return
     }
-    onSave({ ...draft, name: draft.name.trim() }, isNew)
+    if (minutes === null || minutes > 1440) {
+      setError('Write the default time like 30m, 1h or 1h30.')
+      document.getElementById(id('time'))?.focus()
+      return
+    }
+    onSave({ ...draft, name: draft.name.trim(), minutes }, isNew)
   }
 
   return (
     <Modal
       title={isNew ? 'New routine' : 'Edit routine'}
+      subtitle="Something you repeat. Check in each time you do it."
       size="sm"
-      dirty={!same(draft, initial)}
+      dirty={!same({ ...draft, minutes }, { ...initial, minutes: initial.minutes })}
       onClose={onClose}
       onSubmit={submit}
       footer={({ requestClose }) => (
@@ -222,41 +233,105 @@ export function RoutineModal({ routine, onSave, onDelete, onClose }) {
           <button type="button" className="adm-btn is-ghost" onClick={requestClose}>
             Cancel
           </button>
-          <button type="submit" className="adm-btn is-primary">
+          <button type="submit" className="adm-btn is-light">
             {isNew ? 'Create routine' : 'Save changes'}
           </button>
         </>
       )}
     >
       <div className="adm-field">
-        <label htmlFor={id('name')}>Name</label>
-        <input id={id('name')} data-autofocus value={draft.name} maxLength={120} placeholder="e.g. Review the week" aria-invalid={error && !draft.name.trim() ? 'true' : undefined} onChange={(e) => {
-          setDraft((r) => ({ ...r, name: e.target.value }))
-          setError('')
-        }} />
+        <input
+          id={id('name')}
+          aria-label="Name"
+          data-autofocus
+          value={draft.name}
+          maxLength={120}
+          placeholder="Gym"
+          aria-invalid={error && !draft.name.trim() ? 'true' : undefined}
+          onChange={(e) => {
+            setDraft((r) => ({ ...r, name: e.target.value }))
+            setError('')
+          }}
+        />
       </div>
-      <div className="adm-field">
-        <label htmlFor={id('cat')}>Category</label>
-        <CategorySelect id={id('cat')} value={draft.categoryId} onChange={(v) => setDraft((r) => ({ ...r, categoryId: v }))} />
-      </div>
+
       <fieldset className="adm-field">
-        <legend>Repeats on</legend>
-        <div className="adm-daypick">
-          {DAY_LABELS.map((label, d) => (
-            <button key={d} type="button" className={draft.days.includes(d) ? 'is-active' : ''} aria-pressed={draft.days.includes(d)} aria-label={DAY_NAMES[d]} onClick={() => toggleDay(d)}>
-              {label}
+        <legend>Category</legend>
+        <div className="adm-catpills">
+          {state.categories.map((c) => (
+            <button key={c.id} type="button" className={draft.categoryId === c.id ? 'is-active' : ''} aria-pressed={draft.categoryId === c.id} style={{ '--c': c.color }} onClick={() => setDraft((r) => ({ ...r, categoryId: c.id }))}>
+              <i aria-hidden="true" /> {c.name}
             </button>
           ))}
         </div>
-        <div className="adm-row">
-          <button type="button" className="adm-link" onClick={() => setDraft((r) => ({ ...r, days: [0, 1, 2, 3, 4] }))}>
-            Weekdays
-          </button>
-          <button type="button" className="adm-link" onClick={() => setDraft((r) => ({ ...r, days: [0, 1, 2, 3, 4, 5, 6] }))}>
-            Every day
-          </button>
-        </div>
       </fieldset>
+
+      <fieldset className="adm-field">
+        <legend>How often</legend>
+        <Segmented
+          label="How often"
+          value={draft.mode}
+          onChange={(mode) => {
+            setDraft((r) => ({ ...r, mode, days: mode === 'days' && !r.days.length ? [0, 1, 2, 3, 4] : r.days }))
+            setError('')
+          }}
+          options={[{ id: 'times', label: 'Times a week' }, { id: 'days', label: 'Set days' }]}
+        />
+        {draft.mode === 'times' ? (
+          <div className="adm-numpick" role="group" aria-label="Times a week">
+            {[1, 2, 3, 4, 5, 6, 7].map((n) => (
+              <button key={n} type="button" className={draft.perWeek === n ? 'is-active' : ''} aria-pressed={draft.perWeek === n} onClick={() => setDraft((r) => ({ ...r, perWeek: n }))}>
+                {n}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <>
+            <div className="adm-numpick" role="group" aria-label="Repeats on">
+              {DAY_LABELS.map((label, d) => (
+                <button key={d} type="button" className={draft.days.includes(d) ? 'is-active' : ''} aria-pressed={draft.days.includes(d)} aria-label={DAY_NAMES[d]} onClick={() => toggleDay(d)}>
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div className="adm-row">
+              <button type="button" className="adm-link" onClick={() => setDraft((r) => ({ ...r, days: [0, 1, 2, 3, 4] }))}>
+                Weekdays
+              </button>
+              <button type="button" className="adm-link" onClick={() => setDraft((r) => ({ ...r, days: [0, 1, 2, 3, 4, 5, 6] }))}>
+                Every day
+              </button>
+            </div>
+          </>
+        )}
+      </fieldset>
+
+      <div className="adm-two">
+        <div className="adm-field">
+          <label htmlFor={id('time')}>
+            Default time <small>(optional)</small>
+          </label>
+          <input
+            id={id('time')}
+            value={minutesText}
+            placeholder="e.g. 45m"
+            aria-invalid={minutes === null ? 'true' : undefined}
+            onChange={(e) => {
+              setMinutesText(e.target.value)
+              setError('')
+            }}
+          />
+          <p className="adm-hint">Logged on each check-in. Like 30m or 1h</p>
+        </div>
+        <div className="adm-field">
+          <label htmlFor={id('remind')}>
+            Reminder <small>(optional)</small>
+          </label>
+          <input id={id('remind')} type="time" value={draft.reminder} onChange={(e) => setDraft((r) => ({ ...r, reminder: e.target.value }))} />
+          <p className="adm-hint">Reminders are saved but not sent yet</p>
+        </div>
+      </div>
+
       {error && (
         <p className="adm-error" role="alert">
           {error}

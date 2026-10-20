@@ -1,21 +1,22 @@
 import { useMemo } from 'react'
-import { TbCheck, TbClockHour4, TbFlame, TbPencil, TbPlus, TbRepeat, TbTrash } from 'react-icons/tb'
+import { TbCheck, TbClockHour4, TbPencil, TbPlus, TbTrash } from 'react-icons/tb'
 import { useAdmin } from './ctx'
 import {
-  DAY_LABELS,
   DAY_NAMES,
   addDays,
   entryCategory,
   formatDuration,
   localDay,
   longDate,
-  routineStreak,
+  parseDate,
+  routineChecks,
+  routineTarget,
+  routineWeekStreak,
   weekDates,
   weekdayIndex,
 } from './store'
-import { CategoryDot, EmptyState } from './ui'
+import { CategoryDot, EmptyState, Ring } from './ui'
 
-const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
 
 function PageHead({ title, sub, children }) {
   return (
@@ -31,67 +32,148 @@ function PageHead({ title, sub, children }) {
 
 // ---------------------------------------------------------------- Routines
 
+const WEEK_SHORT = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+
+const rangeLabel = (a, b) => {
+  const fmt = (d, weekday) => parseDate(d).toLocaleDateString('en-GB', { weekday: weekday ? 'short' : undefined, day: 'numeric', month: 'short' })
+  return `${fmt(a, true)} to ${fmt(b, true)}`
+}
+
+const frequencyText = (r) => {
+  if (r.mode === 'times') return `${r.perWeek}x a week`
+  if (r.days.length === 7) return 'Every day'
+  if (r.days.join() === '0,1,2,3,4') return 'Weekdays'
+  return r.days.map((d) => DAY_NAMES[d].slice(0, 3)).join(', ')
+}
+
+function MiniRing({ value }) {
+  const r = 9
+  const c = 2 * Math.PI * r
+  return (
+    <svg className="adm-rt-ring" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r={r} fill="none" strokeWidth="3" className="adm-ring-track" />
+      <circle cx="12" cy="12" r={r} fill="none" strokeWidth="3" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - Math.min(1, value))} transform="rotate(-90 12 12)" className="adm-ring-value" />
+    </svg>
+  )
+}
+
 export function RoutinesPage() {
-  const { state, today, newRoutine, editRoutine, dispatch } = useAdmin()
+  const { state, today, newRoutine, editRoutine, dispatch, toast } = useAdmin()
   const dates = weekDates(today)
-  const scheduledToday = state.routines.filter((r) => r.days.includes(weekdayIndex(today)))
-  const doneToday = scheduledToday.filter((r) => r.done[today]).length
+  const cats = Object.fromEntries(state.categories.map((c) => [c.id, c]))
+
+  const stats = state.routines.map((r) => ({ r, checks: routineChecks(r, today), target: routineTarget(r) }))
+  const totalChecks = stats.reduce((n, s) => n + s.checks, 0)
+  const totalTarget = stats.reduce((n, s) => n + s.target, 0)
+  const percent = totalTarget ? Math.min(100, Math.round((totalChecks / totalTarget) * 100)) : 0
+  const onTarget = stats.filter((s) => s.target > 0 && s.checks >= s.target).length
+
+  const remove = (r) => {
+    if (!window.confirm(`Delete the routine “${r.name}”?`)) return
+    dispatch({ type: 'DELETE_ROUTINE', id: r.id })
+    toast('Routine deleted')
+  }
 
   return (
-    <div className="adm-page">
-      <PageHead title="Routines" sub={`${plural(state.routines.length, 'routine')} · ${doneToday} of ${scheduledToday.length} done today`}>
+    <div className="adm-page adm-routines-page">
+      <PageHead title="Routines" sub={`Week of ${parseDate(dates[0]).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} · check in each time you do one`}>
         <button type="button" className="adm-btn is-light" onClick={newRoutine}>
           <TbPlus aria-hidden="true" /> New routine
         </button>
       </PageHead>
 
-      {state.routines.length === 0 ? (
-        <EmptyState icon={TbRepeat} title="No routines yet" action={<button type="button" className="adm-btn is-light" onClick={newRoutine}><TbPlus aria-hidden="true" /> Create a routine</button>}>
-          Routines are things you repeat on set days, like replying to enquiries or reviewing the week. Tick them off as you go.
-        </EmptyState>
-      ) : (
-        <ul className="adm-routines">
-          {state.routines.map((r) => {
-            const cat = state.categories.find((c) => c.id === r.categoryId)
-            const streak = routineStreak(r, today)
-            return (
-              <li key={r.id} className="adm-routine">
-                <div className="adm-routine-main">
+      <section className="adm-dcard adm-rt-summary" aria-label="This week">
+        <div className="adm-rt-sum-main">
+          <Ring percent={percent} size={72} stroke={6} />
+          <div>
+            <p className="adm-eyebrow">This week</p>
+            <p className="adm-big">
+              {totalChecks} / {totalTarget}
+            </p>
+            <small>check-ins · {rangeLabel(dates[0], dates[6])}</small>
+          </div>
+        </div>
+        <div className="adm-rt-sum-met">
+          <p className="adm-eyebrow">Met this week</p>
+          <p className="adm-big">
+            {onTarget} / {state.routines.length}
+          </p>
+          <small>routines on target</small>
+        </div>
+      </section>
+
+      <div className="adm-rt-grid">
+        {stats.map(({ r, checks, target }) => {
+          const cat = cats[r.categoryId]
+          const streak = routineWeekStreak(r, today)
+          const todayDone = Boolean(r.done[today])
+          const todayAllowed = r.mode === 'times' || r.days.includes(weekdayIndex(today))
+          const meta = [frequencyText(r), r.reminder, r.minutes ? formatDuration(r.minutes * 60) : ''].filter(Boolean).join(' · ')
+          return (
+            <article key={r.id} className="adm-dcard adm-rt-card">
+              <header>
+                <span className="adm-cat">
+                  <CategoryDot color={cat?.color} /> {cat?.name}
+                </span>
+                <span className="adm-rt-streak">{streak ? `${streak}-week streak` : 'No streak yet'}</span>
+              </header>
+              <div className="adm-rt-title">
+                <div>
                   <h3>{r.name}</h3>
-                  <span className="adm-cat">
-                    <CategoryDot color={cat?.color} /> {cat?.name}
-                  </span>
+                  <p>{meta}</p>
                 </div>
-                <div className="adm-weekdots" role="group" aria-label={`${r.name} this week`}>
-                  {dates.map((date, i) => {
-                    const scheduled = r.days.includes(i)
-                    const done = Boolean(r.done[date])
-                    return (
+                <div className="adm-rt-tools">
+                  <button type="button" className="adm-icon-btn" aria-label={`Edit ${r.name}`} onClick={() => editRoutine(r.id)}>
+                    <TbPencil aria-hidden="true" />
+                  </button>
+                  <button type="button" className="adm-icon-btn" aria-label={`Delete ${r.name}`} onClick={() => remove(r)}>
+                    <TbTrash aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
+              <div className="adm-rt-days" role="group" aria-label={`${r.name} this week`}>
+                {dates.map((date, i) => {
+                  const allowed = r.mode === 'times' || r.days.includes(i)
+                  const done = Boolean(r.done[date])
+                  return (
+                    <div key={date} className={date === today ? 'is-today' : ''}>
                       <button
-                        key={date}
                         type="button"
-                        disabled={!scheduled || date > today}
-                        className={`${done ? 'is-done' : ''}${scheduled ? ' is-scheduled' : ''}${date === today ? ' is-today' : ''}`}
+                        disabled={(!allowed && !done) || date > today}
+                        className={`${done ? 'is-done' : ''}${allowed ? ' is-scheduled' : ''}`}
                         aria-pressed={done}
-                        aria-label={`${DAY_NAMES[i]}${scheduled ? (done ? ', done' : ', not done') : ', not scheduled'}`}
+                        aria-label={`${DAY_NAMES[i]}${done ? ', done' : allowed ? ', not done' : ', not scheduled'}`}
                         onClick={() => dispatch({ type: 'TOGGLE_ROUTINE_DAY', id: r.id, date })}
                       >
-                        {DAY_LABELS[i]}
+                        {done && <TbCheck aria-hidden="true" />}
                       </button>
-                    )
-                  })}
-                </div>
-                <span className="adm-streak" title="Scheduled days in a row">
-                  <TbFlame aria-hidden="true" /> {streak} <small>{streak === 1 ? 'day' : 'days'}</small>
+                      <span>{WEEK_SHORT[i]}</span>
+                    </div>
+                  )
+                })}
+              </div>
+              <footer>
+                <span className="adm-rt-progress">
+                  <MiniRing value={target ? checks / target : 0} />
+                  <b>
+                    {checks} / {target}
+                  </b>{' '}
+                  this week
                 </span>
-                <button type="button" className="adm-icon-btn" aria-label={`Edit ${r.name}`} onClick={() => editRoutine(r.id)}>
-                  <TbPencil aria-hidden="true" />
+                <button type="button" className={`adm-donebtn${todayDone ? ' is-done' : ''}`} disabled={!todayAllowed && !todayDone} aria-pressed={todayDone} onClick={() => dispatch({ type: 'TOGGLE_ROUTINE_DAY', id: r.id, date: today })}>
+                  {todayDone && <TbCheck aria-hidden="true" />} {todayDone ? 'Done today' : 'Mark done'}
                 </button>
-              </li>
-            )
-          })}
-        </ul>
-      )}
+              </footer>
+            </article>
+          )
+        })}
+        <button type="button" className="adm-rt-new" onClick={newRoutine}>
+          <TbPlus aria-hidden="true" />
+          <span>New routine</span>
+        </button>
+      </div>
+
+      {state.routines.length === 0 && <p className="adm-dempty">Routines are things you repeat, like the gym or reviewing the week. Check in each time you do one and the week fills up.</p>}
     </div>
   )
 }
