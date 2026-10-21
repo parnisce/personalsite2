@@ -69,7 +69,7 @@ export function HeroStatus() {
 
 // ---------------------------------------------------------------- rotating headline
 
-export const ROTATING_LINES = ['I AUTOMATE.', 'I GENERATE LEADS.', 'I BUILD WITH AI.', 'I SCALE SYSTEMS.', 'I OPTIMIZE.', 'I INTEGRATE.']
+export const ROTATING_LINES = ['I AUTOMATE.', 'I INNOVATE.', 'I BUILD WITH AI.', 'I SCALE SYSTEMS.', 'I OPTIMIZE.', 'I INTEGRATE.']
 
 // The blue headline line: each phrase slides up out of view as the next slides in, then it loops.
 export function RotatingLine({ phrases = ROTATING_LINES, reduced = false, interval = 2600 }) {

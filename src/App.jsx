@@ -126,6 +126,7 @@ function Hero({ reduced }) {
           </a>
         </div>
       </div>
+      <Ticker />
       <div className="hero-index" aria-hidden="true">
         <span className="section-num">01</span>
         <span className="section-name">Hero</span>
@@ -674,7 +675,6 @@ export default function App() {
       <Header active={active} />
       <main>
         <Hero reduced={reduced} />
-        <Ticker />
         <About />
         <Portfolio />
         <Testimonials />

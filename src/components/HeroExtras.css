@@ -152,6 +152,17 @@
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
   }
 
+  /* Inside the hero it sits along the bottom edge of the first screen. */
+  .hero .ticker {
+    position: absolute;
+    inset: auto 0 0 0;
+    z-index: 3;
+    border-bottom: 0;
+    background: linear-gradient(180deg, rgba(5, 11, 20, 0.35), rgba(5, 11, 20, 0.85));
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
   .ticker-track {
     display: flex;
     flex: none;
@@ -185,6 +196,12 @@
   @keyframes ticker-scroll {
     to {
       transform: translateX(-100%);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .hero .hero-grid {
+      padding-bottom: 96px;
     }
   }
 
