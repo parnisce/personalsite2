@@ -1,7 +1,7 @@
 @layer components {
   .presence {
     position: fixed;
-    left: 20px;
+    right: 20px;
     bottom: 20px;
     z-index: 40;
     display: inline-flex;
@@ -52,7 +52,7 @@
 
   @media (max-width: 640px) {
     .presence {
-      left: 12px;
+      right: 12px;
       bottom: 12px;
       padding: 8px 14px 8px 12px;
       font-size: 13px;

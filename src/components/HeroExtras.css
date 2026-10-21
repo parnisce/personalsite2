@@ -1,0 +1,219 @@
+@layer components {
+  /* ---- availability + like */
+  .hero-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .hero-available,
+  .hero-like {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(120, 190, 255, 0.22);
+    background: rgba(8, 18, 32, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .hero-available i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #35e08a;
+    box-shadow: 0 0 0 0 rgba(53, 224, 138, 0.6);
+    animation: hero-pulse 2s ease-out infinite;
+  }
+
+  .hero-like {
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.25s, background 0.25s, transform 0.2s;
+  }
+
+  .hero-like:hover {
+    border-color: rgba(0, 229, 255, 0.6);
+    transform: translateY(-1px);
+  }
+
+  .hero-like svg {
+    font-size: 16px;
+    color: var(--cyan);
+    transition: transform 0.25s;
+  }
+
+  .hero-like.is-liked {
+    border-color: rgba(0, 229, 255, 0.55);
+    background: rgba(0, 229, 255, 0.1);
+    cursor: default;
+  }
+
+  .hero-like.is-liked svg {
+    fill: var(--cyan);
+    animation: hero-pop 0.4s ease-out;
+  }
+
+  .hero-like b {
+    padding-left: 10px;
+    border-left: 1px solid rgba(120, 190, 255, 0.25);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @keyframes hero-pulse {
+    70%,
+    100% {
+      box-shadow: 0 0 0 8px rgba(53, 224, 138, 0);
+    }
+  }
+
+  @keyframes hero-pop {
+    40% {
+      transform: scale(1.5);
+    }
+  }
+
+  /* ---- rotating headline line */
+  .rotating {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+  }
+
+  .rotating-sizer {
+    visibility: hidden;
+    display: block;
+    white-space: nowrap;
+  }
+
+  .rotating-word {
+    position: absolute;
+    inset: 0 auto auto 0;
+    white-space: nowrap;
+  }
+
+  .rotating-word.is-first {
+    animation: word-first 0.9s 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .rotating-word.is-in {
+    animation: word-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .rotating-word.is-out {
+    animation: word-out 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes word-first {
+    from {
+      transform: translateY(105%);
+    }
+  }
+
+  @keyframes word-in {
+    from {
+      transform: translateY(105%);
+    }
+  }
+
+  @keyframes word-out {
+    to {
+      transform: translateY(-105%);
+    }
+  }
+
+  .rotating.is-static .rotating-word {
+    animation: none !important;
+  }
+
+  .rotating.is-static .rotating-word.is-out {
+    display: none;
+  }
+
+  /* ---- ticker */
+  .ticker {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    overflow: hidden;
+    border-block: 1px solid rgba(120, 190, 255, 0.14);
+    background: rgba(5, 11, 20, 0.94);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  /* Inside the hero it sits along the bottom edge of the first screen. */
+  .hero .ticker {
+    position: absolute;
+    inset: auto 0 0 0;
+    z-index: 3;
+    border-bottom: 0;
+    background: linear-gradient(180deg, rgba(5, 11, 20, 0.35), rgba(5, 11, 20, 0.85));
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  .ticker-track {
+    display: flex;
+    flex: none;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    animation: ticker-scroll 38s linear infinite;
+  }
+
+  .ticker:hover .ticker-track {
+    animation-play-state: paused;
+  }
+
+  .ticker li {
+    display: inline-flex;
+    align-items: center;
+    gap: 40px;
+    padding: 22px 0 22px 40px;
+    font-size: clamp(16px, 1.5vw, 20px);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .ticker li i {
+    font-style: normal;
+    font-size: 18px;
+    color: var(--cyan);
+  }
+
+  @keyframes ticker-scroll {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .hero .hero-grid {
+      padding-bottom: 96px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-available i,
+    .hero-like.is-liked svg,
+    .ticker-track {
+      animation: none;
+    }
+
+    .ticker {
+      overflow-x: auto;
+    }
+  }
+}

@@ -98,3 +98,20 @@ drop policy if exists "owner reads analytics" on public.analytics_events;
 create policy "owner reads analytics" on public.analytics_events for select to authenticated using (true);
 drop policy if exists "owner deletes analytics" on public.analytics_events;
 create policy "owner deletes analytics" on public.analytics_events for delete to authenticated using (true);
+
+-- 6. "Like this portfolio" counter. Anyone can add a like; the total is read through a function
+-- so the public key never gets permission to read the table itself.
+create table if not exists public.portfolio_likes (
+  id bigint generated always as identity primary key,
+  created_at timestamptz not null default now()
+);
+alter table public.portfolio_likes enable row level security;
+drop policy if exists "anyone can like" on public.portfolio_likes;
+create policy "anyone can like" on public.portfolio_likes for insert to anon, authenticated with check (true);
+drop policy if exists "owner reads likes" on public.portfolio_likes;
+create policy "owner reads likes" on public.portfolio_likes for select to authenticated using (true);
+
+create or replace function public.get_likes() returns bigint
+language sql security definer set search_path = public as
+$$ select count(*) from public.portfolio_likes $$;
+grant execute on function public.get_likes() to anon, authenticated;
