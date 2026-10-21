@@ -7,6 +7,7 @@ import { FiArrowLeft, FiArrowRight, FiArrowUpRight, FiCalendar, FiMapPin, FiMous
 import { FaLinkedinIn } from 'react-icons/fa6'
 import { RiDoubleQuotesL } from 'react-icons/ri'
 import heroBg from './assets/hero-bg.webp'
+import { HeroStatus, RotatingLine, Ticker } from './components/HeroExtras'
 import ContactForm from './components/ContactForm'
 import FallbackLogo from './components/FallbackLogo'
 import { Footer, Header } from './components/SiteChrome'
@@ -92,25 +93,25 @@ function Hero({ reduced }) {
       </div>
       <div className="shell hero-grid">
         <div className="hero-copy">
-          <p className="eyebrow hero-in">Next.js &amp; GoHighLevel Developer · Philippines</p>
+          <HeroStatus />
           <h1 className="hero-title">
             {reduced ? (
               <>
                 <span>I BUILD.</span>
                 <span>I DESIGN.</span>
-                <span className="accent">I AUTOMATE.</span>
+                <RotatingLine reduced />
               </>
             ) : (
               <>
                 <SplitText tag="span" text="I BUILD." textAlign="left" delay={40} mask />
                 <SplitText tag="span" text="I DESIGN." textAlign="left" delay={40} mask />
-                <SplitText tag="span" text="I AUTOMATE." textAlign="left" delay={40} mask className="accent" />
+                <RotatingLine />
               </>
             )}
           </h1>
           <p className="lead hero-in">
-            Is your website quietly losing you customers? I build fast Next.js websites and GoHighLevel funnels,
-            workflows and AI chat that turn clicks into booked calls, around the clock.
+            I build high-performance websites, connect powerful tools, and automate business workflows that turn more
+            visitors into customers.
           </p>
           <div className="actions hero-in">
             <a href="#portfolio" className="btn btn-primary">
@@ -673,6 +674,7 @@ export default function App() {
       <Header active={active} />
       <main>
         <Hero reduced={reduced} />
+        <Ticker />
         <About />
         <Portfolio />
         <Testimonials />

@@ -62,6 +62,15 @@ export const FINDINGS = [
     action: 'Acceptable for a vanity counter. Do not use the number for anything that matters.',
   },
   {
+    id: 'SEC-9',
+    area: 'Security',
+    severity: 'low',
+    status: 'open',
+    title: 'Like counter can be inflated',
+    detail: 'The "Like this portfolio" button allows one like per browser, but the limit is only a flag in the visitor\'s own storage. Anyone calling the API directly can add likes.',
+    action: 'Fine for a vanity counter. If it ever matters, count likes through an edge function with rate limiting.',
+  },
+  {
     id: 'SEC-5',
     area: 'Security',
     severity: 'low',
