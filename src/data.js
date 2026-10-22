@@ -212,25 +212,14 @@ export const ABOUT_PILLARS = [
   },
 ]
 
-// Journey timeline. `big` is what the large year on the left shows when the item is in view.
+// Journey timeline, newest first. `big` is what the large year on the left shows when the item is in view.
 export const JOURNEY = [
   {
-    year: '2009',
-    title: 'The first website',
-    text: 'Started building websites and found out I enjoyed the craft as much as the result. The start of seventeen years on the web.',
-    tags: ['HTML', 'CSS', 'Web'],
-  },
-  {
-    year: '2010s',
-    title: 'WordPress for agencies',
-    text: 'For over a decade I built WordPress sites for agencies, consultancies and founders. It taught me what clients actually need: a site that looks right and brings in work.',
-    tags: ['WordPress', 'Elementor', 'Agencies'],
-  },
-  {
-    year: '2024',
-    title: 'Next.js and Supabase',
-    text: 'Moved to custom builds on Next.js with Supabase, paired with GoHighLevel for funnels, pipelines and calendars.',
-    tags: ['Next.js', 'Supabase', 'GoHighLevel'],
+    year: 'Present',
+    big: 'Now',
+    title: 'Systems that deliver',
+    text: 'Combining modern web development, interface design and intelligent automation to build fast, custom experiences that turn more visitors into customers.',
+    tags: ['AI', 'Next.js', 'Growth'],
   },
   {
     year: '2025',
@@ -239,10 +228,21 @@ export const JOURNEY = [
     tags: ['Workflows', 'Conversation AI', 'Automation'],
   },
   {
-    year: 'Present',
-    big: 'Now',
-    title: 'Systems that deliver',
-    text: 'Combining modern web development, interface design and intelligent automation to build fast, custom experiences that turn more visitors into customers.',
-    tags: ['AI', 'Next.js', 'Growth'],
+    year: '2024',
+    title: 'Next.js and Supabase',
+    text: 'Moved to custom builds on Next.js with Supabase, paired with GoHighLevel for funnels, pipelines and calendars.',
+    tags: ['Next.js', 'Supabase', 'GoHighLevel'],
+  },
+  {
+    year: '2010s',
+    title: 'WordPress for agencies',
+    text: 'For over a decade I built WordPress sites for agencies, consultancies and founders. It taught me what clients actually need: a site that looks right and brings in work.',
+    tags: ['WordPress', 'Elementor', 'Agencies'],
+  },
+  {
+    year: '2009',
+    title: 'The first website',
+    text: 'Started building websites and found out I enjoyed the craft as much as the result. The start of seventeen years on the web.',
+    tags: ['HTML', 'CSS', 'Web'],
   },
 ]
