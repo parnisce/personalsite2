@@ -1994,3 +1994,249 @@ textarea.cf-input {
     display: none;
   }
 }
+
+/* ---------- journey: sticky intro on the left, timeline on the right ---------- */
+.journey {
+  position: relative;
+  padding: 110px 0;
+  border-top: 1px solid var(--line);
+}
+
+.journey-bg {
+  background:
+    radial-gradient(35% 40% at 12% 30%, rgba(0, 199, 217, 0.1), transparent 70%),
+    linear-gradient(180deg, #050d18, #061120 50%, #050d18);
+}
+
+.jr-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 80px;
+  align-items: stretch;
+}
+
+.jr-left-inner {
+  position: sticky;
+  top: 120px;
+}
+
+.jr-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+  font-size: 14px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.jr-eyebrow b {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--cyan);
+}
+
+.jr-eyebrow span {
+  width: 40px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.jr-left .body {
+  max-width: 440px;
+}
+
+.jr-reading {
+  margin-top: 64px;
+}
+
+.jr-reading-label {
+  font-size: 13px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(233, 241, 251, 0.45);
+}
+
+.jr-year {
+  margin-top: 14px;
+  font-family: var(--display);
+  font-size: clamp(64px, 8vw, 112px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #fff;
+  animation: jr-year-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes jr-year-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+.jr-dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 26px;
+}
+
+.jr-dots i {
+  width: 20px;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.16);
+  transition: width 0.4s, background 0.4s;
+}
+
+.jr-dots i.is-active {
+  width: 40px;
+  background: var(--cyan);
+}
+
+.jr-list {
+  position: relative;
+}
+
+.jr-track,
+.jr-fill {
+  position: absolute;
+  left: -40px;
+  top: 0;
+  width: 1px;
+}
+
+.jr-track {
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.jr-fill {
+  background: linear-gradient(180deg, rgba(0, 229, 255, 0.2), var(--cyan));
+}
+
+.jr-head {
+  position: absolute;
+  left: -44px;
+  width: 9px;
+  height: 9px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 16px 3px rgba(0, 229, 255, 0.55);
+}
+
+.jr-item {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 16px;
+  min-height: 300px;
+  padding: 52px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  opacity: 0.42;
+  transition: opacity 0.5s;
+}
+
+.jr-item:last-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.jr-item.is-active,
+.jr-item:hover {
+  opacity: 1;
+}
+
+.jr-date {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-top: 6px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.jr-item.is-active .jr-date {
+  color: var(--cyan);
+}
+
+.jr-item.is-active .jr-date::before {
+  content: '';
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+}
+
+.jr-item h3 {
+  font-family: var(--display);
+  font-size: clamp(24px, 2.2vw, 32px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.jr-item p:not(.jr-date) {
+  max-width: 560px;
+  margin-top: 16px;
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.jr-item .wk-tags {
+  margin-top: 22px;
+}
+
+@media (max-width: 1023px) {
+  .jr-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .jr-left-inner {
+    position: static;
+  }
+
+  .jr-reading,
+  .jr-track,
+  .jr-fill,
+  .jr-head {
+    display: none;
+  }
+
+  .jr-item {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    padding: 36px 0;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jr-year {
+    animation: none;
+  }
+
+  .jr-item,
+  .jr-dots i {
+    transition: none;
+  }
+}
+
+/* The logo fades out while the Journey timeline is in view. */
+.logo-canvas,
+.logo-fallback {
+  transition: opacity 0.5s;
+}
+
+html.logo-away .logo-canvas,
+html.logo-away .logo-fallback {
+  opacity: 0;
+}

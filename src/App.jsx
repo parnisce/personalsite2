@@ -15,6 +15,7 @@ import SplitText from './components/SplitText'
 import {
   ABOUT_LINKS,
   ABOUT_PILLARS,
+  JOURNEY,
   BOOKING_URL,
   CONTACT,
   LINKEDIN_RECOMMENDATIONS_URL,
@@ -369,6 +370,104 @@ function Portfolio() {
   )
 }
 
+// A short history, told as a timeline. The left column stays in view and shows which year you
+// are reading; the cyan line on the right fills as you scroll down the list.
+function Journey() {
+  const [active, setActive] = useState(0)
+  const [fill, setFill] = useState(0)
+  const list = useRef(null)
+  const items = useRef([])
+
+  useEffect(() => {
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const middle = window.innerHeight / 2
+      let best = 0
+      let nearest = Infinity
+      items.current.forEach((el, i) => {
+        if (!el) return
+        const r = el.getBoundingClientRect()
+        const distance = Math.abs((r.top + r.bottom) / 2 - middle)
+        if (distance < nearest) {
+          nearest = distance
+          best = i
+        }
+      })
+      setActive(best)
+      const box = list.current?.getBoundingClientRect()
+      if (box && box.height) setFill(Math.min(1, Math.max(0, (middle - box.top) / box.height)))
+    }
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [])
+
+  const current = JOURNEY[active]
+
+  return (
+    <section id="journey" className="journey">
+      <div className="section-bg journey-bg" />
+      <div className="shell jr-grid">
+        <div className="jr-left">
+          <div className="jr-left-inner">
+            <p className="jr-eyebrow">
+              <b>04</b>
+              <span aria-hidden="true" />
+              Journey
+            </p>
+            <h2 className="h2">
+              Seventeen years of
+              <br />
+              <span className="wk-dim">steady progress.</span>
+            </h2>
+            <p className="body">From my first web page to AI-powered systems that follow up with customers, a short history of how I got here.</p>
+            <div className="jr-reading" aria-hidden="true">
+              <p className="jr-reading-label">You are reading</p>
+              <p className="jr-year" key={current.big ?? current.year}>
+                {current.big ?? current.year}
+              </p>
+              <div className="jr-dots">
+                {JOURNEY.map((j, i) => (
+                  <i key={j.year} className={i === active ? 'is-active' : ''} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="jr-list" ref={list}>
+          <span className="jr-track" aria-hidden="true" />
+          <span className="jr-fill" aria-hidden="true" style={{ height: `${fill * 100}%` }} />
+          <span className="jr-head" aria-hidden="true" style={{ top: `${fill * 100}%` }} />
+          {JOURNEY.map((j, i) => (
+            <article key={j.year} ref={(el) => (items.current[i] = el)} className={`jr-item${i === active ? ' is-active' : ''}`}>
+              <p className="jr-date">{j.year}</p>
+              <div>
+                <h3>{j.title}</h3>
+                <p>{j.text}</p>
+                <ul className="wk-tags">
+                  {j.tags.map((t) => (
+                    <li key={t}>{t}</li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function Testimonials() {
   const track = useRef(null)
   const hasQuotes = TESTIMONIALS.length > 0
@@ -379,7 +478,7 @@ function Testimonials() {
   return (
     <section id="testimonials" className="section testimonials">
       <div className="section-bg testimonials-bg" />
-      <SectionLabel index={4} label="Testimonials" />
+      <SectionLabel index={5} label="Testimonials" />
       <div className="shell split split-right">
         <div className="logo-slot" />
         <div className="min0">
@@ -443,7 +542,7 @@ function TechStack() {
   return (
     <section id="stack" className="section stack">
       <div className="section-bg stack-bg" />
-      <SectionLabel index={5} label="Services" />
+      <SectionLabel index={6} label="Services" />
       <div className="shell split split-left">
         <div>
           <p className="eyebrow reveal">How I Work</p>
@@ -499,7 +598,7 @@ function Contact() {
           <path className="trail" d="M600 600 C700 560 640 520 760 500 S820 440 860 400 S880 330 900 300" fill="none" />
         </svg>
       </div>
-      <SectionLabel index={6} label="Contact" />
+      <SectionLabel index={7} label="Contact" />
       <div className="shell contact-stack">
         <div className="contact-grid">
           <div className="contact-left">
@@ -616,6 +715,23 @@ export default function App() {
           onToggle: (self) => self.isActive && setActive(sec.id),
         }),
       )
+
+      const journeySection = document.getElementById('journey')
+      if (journeySection) {
+        ScrollTrigger.create({
+          trigger: journeySection,
+          start: 'top center',
+          end: 'bottom center',
+          onToggle: (self) => self.isActive && setActive('journey'),
+        })
+        // The logo steps aside while the timeline is on screen, so it never sits on top of the text.
+        ScrollTrigger.create({
+          trigger: journeySection,
+          start: 'top 75%',
+          end: 'bottom 25%',
+          onToggle: (self) => document.documentElement.classList.toggle('logo-away', self.isActive),
+        })
+      }
 
       // The header settles into a solid bar once the page has scrolled.
       const header = document.querySelector('.header')
@@ -810,6 +926,7 @@ export default function App() {
         <Hero reduced={reduced} />
         <About />
         <Portfolio />
+        <Journey />
         <Testimonials />
         <TechStack />
         <Contact />
