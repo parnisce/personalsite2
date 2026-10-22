@@ -2366,22 +2366,22 @@ html.logo-away .logo-fallback {
 
 .tc-card[data-offset='0'] {
   z-index: 3;
-  transform: rotateY(-6deg);
+  transform: translate3d(90px, 0, 0) rotateY(-6deg);
   filter: drop-shadow(0 0 22px rgba(0, 200, 255, 0.4));
 }
 
 .tc-card[data-offset='1'] {
-  z-index: 2;
-  opacity: 0.92;
+  z-index: 4;
+  opacity: 0.95;
   cursor: pointer;
-  transform: translate3d(calc(100% + 34px), 14px, -90px) rotateY(-26deg) scale(0.9);
+  transform: translate3d(calc(100% + 40px), 14px, -30px) rotateY(-24deg) scale(0.9);
 }
 
 .tc-card[data-offset='-1'] {
   z-index: 1;
   opacity: 0.45;
   cursor: pointer;
-  transform: translate3d(-17%, 16px, -170px) rotateY(28deg) scale(0.86);
+  transform: translate3d(-10%, 16px, -170px) rotateY(26deg) scale(0.86);
 }
 
 .tc-card[data-offset='2'],
@@ -2389,11 +2389,11 @@ html.logo-away .logo-fallback {
   z-index: 0;
   opacity: 0;
   pointer-events: none;
-  transform: translate3d(calc(100% + 34px), 14px, -240px) rotateY(-30deg) scale(0.8);
+  transform: translate3d(calc(100% + 40px), 14px, -240px) rotateY(-30deg) scale(0.8);
 }
 
 .tc-card[data-offset='-2'] {
-  transform: translate3d(-17%, 16px, -260px) rotateY(30deg) scale(0.8);
+  transform: translate3d(-10%, 16px, -260px) rotateY(30deg) scale(0.8);
 }
 
 .tc-mark {
