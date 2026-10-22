@@ -225,12 +225,16 @@ function ProjectPreview({ project }) {
         </div>
       </div>
       <div className="wk-phone" aria-hidden="true">
-        <div className="wk-phone-screen">
-          <b />
-          <i />
-          <i />
-          <span />
-        </div>
+        {project.mobileImage ? (
+          <img src={project.mobileImage} alt="" loading="lazy" />
+        ) : (
+          <div className="wk-phone-screen">
+            <b />
+            <i />
+            <i />
+            <span />
+          </div>
+        )}
       </div>
     </div>
   )
