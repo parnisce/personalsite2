@@ -111,36 +111,36 @@ export const PROJECTS = [
 export const TESTIMONIALS = [
   {
     quote:
-      "Cyrus is a great website designer and developer. He's also very skilled in working with CRMs and complex workflows. If you are looking for a talented and reliable member of your marketing team, I would highly recommend Cyrus.",
+      "Cyryl is a great website designer and developer. He's also very skilled in working with CRMs and complex workflows. If you are looking for a talented and reliable member of your marketing team, I would highly recommend Cyryl.",
     name: 'Roger Valdez',
     role: 'Founder & CEO, Top Result Consulting',
   },
   {
     quote:
-      'I have worked with Cyrus for many years. He has assisted me long distance to achieve many wonderful outcomes for my online presentations, from website updates and plugins to layout and copy updates. He is always willing to help and is pleasant to work with.',
+      'I have worked with Cyryl for many years. He has assisted me long distance to achieve many wonderful outcomes for my online presentations, from website updates and plugins to layout and copy updates. He is always willing to help and is pleasant to work with.',
     name: 'Jacqueline Coates',
     role: 'Internationally Acclaimed Artist',
   },
   {
-    quote: 'Worked with Cyrus, came through when we needed it the most. Great knowledge and punctual. Recommended A+!!',
+    quote: 'Worked with Cyryl, came through when we needed it the most. Great knowledge and punctual. Recommended A+!!',
     name: 'Bilal Asad',
     role: 'Founder, ScaleYourBiz',
   },
   {
     quote:
-      'Cyrus worked with me to build my first membership site. My build was more complicated than the usual template and he worked consistently with me to get the design right and working effectively. He takes the time to understand what you want and how to implement it.',
+      'Cyryl worked with me to build my first membership site. My build was more complicated than the usual template and he worked consistently with me to get the design right and working effectively. He takes the time to understand what you want and how to implement it.',
     name: 'Robyn Barraclough',
     role: 'Body Harmony Teacher',
   },
   {
     quote:
-      'What I appreciate about his work ethic is his promptness and punctuality in his deliverables. He is committed to target dates and always keeps an open mind to client requests. Cyrus is my go-to guy for anything web development and digital marketing.',
+      'What I appreciate about his work ethic is his promptness and punctuality in his deliverables. He is committed to target dates and always keeps an open mind to client requests. Cyryl is my go-to guy for anything web development and digital marketing.',
     name: 'Norman Velasco',
     role: 'CEO/Owner, EnvieMyMan',
   },
   {
     quote:
-      'Cyrus changed the overall look and feel of our live surfboard website using the same WP template. He listens carefully, is really organized, and his Photoshop skills meant he handled all the image work too. A really nice and easy person to work with!',
+      'Cyryl changed the overall look and feel of our live surfboard website using the same WP template. He listens carefully, is really organized, and his Photoshop skills meant he handled all the image work too. A really nice and easy person to work with!',
     name: 'Julien Bailly',
     role: 'Founder & Director, Una Bambu',
   },

@@ -472,13 +472,38 @@ function Journey() {
   )
 }
 
+// Three cards are in view at a time: the one being read in the middle of the stack, the next one
+// leaning in from the right and the previous one tucked behind. It turns by itself every few
+// seconds and pauses while you hover it, focus it or the tab is hidden.
 function Testimonials() {
-  const track = useRef(null)
-  const hasQuotes = TESTIMONIALS.length > 0
-  const scroll = (dir) => {
-    const card = track.current.querySelector('.quote')
-    track.current.scrollBy({ left: dir * (card.offsetWidth + 16), behavior: 'smooth' })
+  const [index, setIndex] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const swipe = useRef(null)
+  const count = TESTIMONIALS.length
+  const hasQuotes = count > 0
+
+  const go = useCallback((step) => setIndex((i) => (i + step + count) % count), [count])
+
+  useEffect(() => {
+    if (!hasQuotes || count < 2 || paused) return undefined
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined
+    const timer = setInterval(() => {
+      if (document.visibilityState === 'visible') go(1)
+    }, 6500)
+    return () => clearInterval(timer)
+  }, [go, hasQuotes, count, paused, index])
+
+  // Where card i sits relative to the one in view: 0 centre, 1 next, -1 previous, anything else hidden.
+  const offsetOf = (i) => {
+    const half = Math.floor(count / 2)
+    return ((((i - index) % count) + count + half) % count) - half
   }
+
+  const onKeyDown = (e) => {
+    if (e.key === 'ArrowRight') go(1)
+    if (e.key === 'ArrowLeft') go(-1)
+  }
+
   return (
     <section id="testimonials" className="section testimonials">
       <div className="section-bg testimonials-bg" />
@@ -489,53 +514,97 @@ function Testimonials() {
           <div className="row-between">
             <div>
               <p className="eyebrow reveal">In Their Words</p>
-              <h2 className="h2 reveal">What Clients Say</h2>
+              <h2 className="h2 reveal">
+                Trusted by the
+                <br />
+                <span className="accent">people I work with.</span>
+              </h2>
               <p className="body reveal">
-                Every review is a LinkedIn recommendation.{' '}
+                Every review is a LinkedIn recommendation.
+                <br />
                 <a className="text-link" href={LINKEDIN_RECOMMENDATIONS_URL} target="_blank" rel="noopener noreferrer">
-                  Read them on LinkedIn
+                  Read them on LinkedIn <FiArrowRight aria-hidden="true" />
                 </a>
               </p>
             </div>
-            {TESTIMONIALS.length > 3 && (
+            {count > 1 && (
               <div className="arrows reveal">
-                <button className="round-btn" aria-label="Previous" onClick={() => scroll(-1)}>
+                <button type="button" className="round-btn" aria-label="Previous testimonial" onClick={() => go(-1)}>
                   <FiArrowLeft />
                 </button>
-                <button className="round-btn" aria-label="Next" onClick={() => scroll(1)}>
+                <button type="button" className="round-btn is-next" aria-label="Next testimonial" onClick={() => go(1)}>
                   <FiArrowRight />
                 </button>
               </div>
             )}
           </div>
-          <div className="quotes" ref={track}>
-            {hasQuotes
-              ? TESTIMONIALS.map((t) => (
-                  <figure className="quote reveal-card" key={t.name}>
-                    <RiDoubleQuotesL className="quote-mark" />
-                    <blockquote>{t.quote}</blockquote>
-                    <figcaption>
-                      <span className="avatar">{t.name[0]}</span>
-                      <span>
-                        <b>{t.name}</b>
-                        <small>{t.role}</small>
-                      </span>
-                    </figcaption>
-                    <span className="source">
-                      <FaLinkedinIn /> LinkedIn recommendation
-                    </span>
-                  </figure>
-                ))
-              : [0, 1, 2].map((i) => (
-                  <div className="quote quote-placeholder reveal-card" key={i} aria-hidden="true">
-                    <RiDoubleQuotesL className="quote-mark" />
-                    <span className="skeleton" />
-                    <span className="skeleton" />
-                    <span className="skeleton short" />
-                  </div>
+
+          {hasQuotes ? (
+            <div
+              className="tc"
+              role="region"
+              aria-roledescription="carousel"
+              aria-label="Client testimonials"
+              tabIndex={0}
+              onKeyDown={onKeyDown}
+              onMouseEnter={() => setPaused(true)}
+              onMouseLeave={() => setPaused(false)}
+              onFocus={() => setPaused(true)}
+              onBlur={() => setPaused(false)}
+              onPointerDown={(e) => (swipe.current = e.clientX)}
+              onPointerUp={(e) => {
+                if (swipe.current === null) return
+                const dx = e.clientX - swipe.current
+                swipe.current = null
+                if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1)
+              }}
+            >
+              <div className="tc-stage">
+                {TESTIMONIALS.map((t, i) => {
+                  const offset = offsetOf(i)
+                  const shown = Math.abs(offset) <= 1
+                  return (
+                    <figure
+                      key={t.name}
+                      className="tc-card"
+                      data-offset={shown ? offset : offset < 0 ? -2 : 2}
+                      aria-hidden={offset !== 0}
+                      aria-roledescription="slide"
+                      aria-label={`${i + 1} of ${count}`}
+                      onClick={() => offset !== 0 && shown && setIndex(i)}
+                    >
+                      <RiDoubleQuotesL className="tc-mark" aria-hidden="true" />
+                      <blockquote>{t.quote}</blockquote>
+                      <figcaption>
+                        <span className="avatar">{t.name[0]}</span>
+                        <span className="tc-who">
+                          <b>{t.name}</b>
+                          <small>{t.role}</small>
+                        </span>
+                        <a
+                          className="tc-in"
+                          href={LINKEDIN_RECOMMENDATIONS_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${t.name}'s recommendation on LinkedIn`}
+                          tabIndex={offset === 0 ? 0 : -1}
+                        >
+                          <FaLinkedinIn />
+                        </a>
+                      </figcaption>
+                    </figure>
+                  )
+                })}
+              </div>
+              <div className="tc-dots" role="group" aria-label="Choose a testimonial">
+                {TESTIMONIALS.map((t, i) => (
+                  <button key={t.name} type="button" className={i === index ? 'is-active' : ''} aria-label={`Show testimonial ${i + 1} of ${count}`} aria-pressed={i === index} onClick={() => setIndex(i)} />
                 ))}
-          </div>
-          {!hasQuotes && <p className="placeholder-note reveal">Client testimonials coming soon.</p>}
+              </div>
+            </div>
+          ) : (
+            <p className="placeholder-note reveal">Client testimonials coming soon.</p>
+          )}
         </div>
       </div>
     </section>
