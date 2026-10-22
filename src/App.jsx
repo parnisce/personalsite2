@@ -13,13 +13,14 @@ import FallbackLogo from './components/FallbackLogo'
 import { Footer, Header } from './components/SiteChrome'
 import SplitText from './components/SplitText'
 import {
+  ABOUT_LINKS,
+  ABOUT_PILLARS,
   BOOKING_URL,
   CONTACT,
   LINKEDIN_RECOMMENDATIONS_URL,
   PROJECTS,
   SERVICES,
   STACK,
-  STATS,
   TESTIMONIALS,
 } from './data'
 import { anchorToHands, logoState, MOBILE_BREAKPOINT, startLogoMotion } from './three/logoPath'
@@ -140,43 +141,54 @@ function About() {
   return (
     <section id="about" className="section about">
       <div className="section-bg about-bg" />
-      <SectionLabel index={2} label="About" />
-      <div className="shell split split-right">
+      <div className="shell split split-right about-grid">
         <div className="logo-slot" />
-        <div>
-          <p className="eyebrow reveal">About Me</p>
+        <div className="about-copy">
+          <p className="about-eyebrow reveal">
+            <b>02</b>
+            <i>/</i>
+            About
+          </p>
           <h2 className="h2 reveal">
-            Hi, I&apos;m
+            From digital ideas
             <br />
-            Cyryl <span className="accent">Bitangcol</span>
+            <span className="accent">to systems that deliver.</span>
           </h2>
-          <p className="subhead reveal">I connect design, code and automation.</p>
-          <p className="body reveal">
-            A web developer from the Philippines. For over a decade I built WordPress sites for agencies,
-            consultancies and founders. It taught me what clients actually need: a site that looks right and brings
-            in work.
+          <p className="about-text reveal">
+            I&apos;m <b>Cyryl Bitangcol</b>, a web developer from the Philippines with over a decade of experience
+            building websites for agencies, consultancies, and founders. Today, I combine modern web development,
+            interface design, and intelligent automation to create fast, custom digital experiences that connect with
+            customers and help businesses grow.
           </p>
-          <p className="body reveal">
-            For the last two years I&apos;ve built on Next.js with Supabase, paired with GoHighLevel for funnels,
-            workflows and Conversation AI. With AI-assisted development, you get a custom, fast site in the time a
-            template used to take.
+          <p className="about-text reveal">
+            Using Next.js, Supabase, and GoHighLevel, I build websites, lead generation funnels, automated workflows,
+            and AI-powered customer experiences that reduce repetitive work and turn more opportunities into results.
           </p>
-          <div className="stats reveal">
-            {STATS.map((s) => (
-              <div key={s.label}>
-                <strong>
-                  <span className="count" data-to={s.value}>
-                    0
-                  </span>
-                  {s.suffix}
-                </strong>
-                <span>{s.label}</span>
-              </div>
+          <div className="about-links reveal">
+            {ABOUT_LINKS.map(({ label, href, internal }) => (
+              <a key={label} href={href} {...(internal ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>
+                {label} <FiArrowUpRight aria-hidden="true" />
+              </a>
             ))}
+            <span className="about-rule" aria-hidden="true" />
           </div>
-          <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn btn-ghost reveal">
-            Book a discovery call <FiArrowRight />
-          </a>
+        </div>
+      </div>
+      <div className="about-cards-wrap">
+        <div className="about-cards">
+          {ABOUT_PILLARS.map(({ title, description, Icon }) => (
+            <a key={title} href="#stack" className="about-card reveal-card">
+              <span className="about-card-icon">
+                <Icon aria-hidden="true" />
+              </span>
+              <h3>{title}</h3>
+              <p>{description}</p>
+              <span className="about-card-foot" aria-hidden="true">
+                <i />
+                <FiArrowRight />
+              </span>
+            </a>
+          ))}
         </div>
       </div>
     </section>
@@ -600,6 +612,7 @@ export default function App() {
         const CARD_ENTRANCES = [
           ['.project', { y: 90, scale: 0.95, rotationX: -8, transformPerspective: 900 }, 0.12],
           ['.service', { y: 56, scale: 0.96 }, 0.09],
+          ['.about-card', { y: 54, scale: 0.96 }, 0.12],
           ['.tool', { y: 30, scale: 0.8 }, 0.04],
           ['.quote', { x: 70 }, 0.12],
           ['.contact-link', { x: -50 }, 0.12],

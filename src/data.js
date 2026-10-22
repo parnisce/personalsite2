@@ -14,7 +14,18 @@ import {
   SiTypescript,
   SiWordpress,
 } from 'react-icons/si'
-import { TbBolt, TbBrandOpenai, TbCode, TbHierarchy3, TbMessageChatbot, TbPalette, TbRoute } from 'react-icons/tb'
+import {
+  TbBolt,
+  TbBrandOpenai,
+  TbCode,
+  TbGitFork,
+  TbHierarchy3,
+  TbMessageChatbot,
+  TbPalette,
+  TbRoute,
+  TbStack2,
+  TbTag,
+} from 'react-icons/tb'
 
 export const NAV = [
   { id: 'hero', label: 'Home' },
@@ -174,3 +185,28 @@ export const CONTACT = {
     { label: 'Instagram', Icon: FaInstagram, href: 'https://www.instagram.com/iamcyrusbitangcol/' },
   ],
 }
+
+// About section: the three link underlines and the three pillars under the intro.
+export const ABOUT_LINKS = [
+  { label: 'GitHub', href: 'https://github.com/parnisce' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/cyrus-bitangcol/' },
+  { label: 'Portfolio', href: '#portfolio', internal: true },
+]
+
+export const ABOUT_PILLARS = [
+  {
+    title: 'Web Development',
+    description: 'Fast, responsive websites and custom applications built with Next.js, React, and modern backend technologies.',
+    Icon: TbStack2,
+  },
+  {
+    title: 'AI & Automation',
+    description: 'Connected workflows, automated follow-ups, and AI-powered conversations that help businesses respond faster.',
+    Icon: TbGitFork,
+  },
+  {
+    title: 'UI & Product Design',
+    description: 'Thoughtful interfaces, intuitive user journeys, and cohesive design systems built around user needs.',
+    Icon: TbTag,
+  },
+]
