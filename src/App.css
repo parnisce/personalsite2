@@ -1770,3 +1770,15 @@ textarea.cf-input {
     transition: none;
   }
 }
+
+/* On wide screens the side label (03 / Selected Work) is shown; below that the label sits above the heading. */
+@media (min-width: 1580px) {
+  .wk-eyebrow {
+    display: none;
+  }
+
+  /* Keeps the heading clear of the side label, which sticks out of the left of the column. */
+  .wk-head {
+    padding-left: 100px;
+  }
+}

@@ -263,10 +263,11 @@ function Portfolio() {
   return (
     <section id="portfolio" className="section portfolio">
       <div className="section-bg portfolio-bg" />
+      <SectionLabel index={3} label="Selected Work" />
       <div className="shell">
         <div className="wk-head">
           <div>
-            <p className="about-eyebrow reveal">
+            <p className="about-eyebrow wk-eyebrow reveal">
               <b>03</b>
               <i>/</i>
               Selected work
