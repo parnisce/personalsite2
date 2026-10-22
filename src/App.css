@@ -1987,3 +1987,10 @@ textarea.cf-input {
     padding-left: 100px;
   }
 }
+
+/* On wide screens About shows the side label (02 / About); below that the label sits above the heading. */
+@media (min-width: 1580px) {
+  .about-inline-label {
+    display: none;
+  }
+}

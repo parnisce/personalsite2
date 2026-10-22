@@ -141,10 +141,11 @@ function About() {
   return (
     <section id="about" className="section about">
       <div className="section-bg about-bg" />
+      <SectionLabel index={2} label="About" />
       <div className="shell split split-right about-grid">
         <div className="logo-slot" />
         <div className="about-copy">
-          <p className="about-eyebrow reveal">
+          <p className="about-eyebrow about-inline-label reveal">
             <b>02</b>
             <i>/</i>
             About
