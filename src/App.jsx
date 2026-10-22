@@ -183,54 +183,172 @@ function About() {
   )
 }
 
+// A browser-and-phone mock for a project: the real screenshot when the project has an `image`,
+// otherwise artwork generated from its colour.
+function ProjectPreview({ project }) {
+  return (
+    <div className="wk-preview" style={{ '--hue': project.hue }}>
+      <div className="wk-glow" aria-hidden="true" />
+      <div className="wk-frame">
+        <div className="wk-bar" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+          <em>{project.domain}</em>
+        </div>
+        <div className="wk-screen">
+          {project.image ? (
+            <img src={project.image} alt="" loading="lazy" />
+          ) : (
+            <div className="wk-art" aria-hidden="true">
+              <b>{project.title}</b>
+              <i />
+              <i />
+              <i />
+              <span />
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="wk-phone" aria-hidden="true">
+        <div className="wk-phone-screen">
+          <b />
+          <i />
+          <i />
+          <span />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const pad2 = (n) => String(n).padStart(2, '0')
+
 function Portfolio() {
+  const [active, setActive] = useState(0)
+  const articles = useRef([])
+
+  // The article closest to the middle of the screen decides which preview is shown on the right.
+  useEffect(() => {
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const middle = window.innerHeight / 2
+      let best = 0
+      let nearest = Infinity
+      articles.current.forEach((el, i) => {
+        if (!el) return
+        const r = el.getBoundingClientRect()
+        const distance = Math.abs((r.top + r.bottom) / 2 - middle)
+        if (distance < nearest) {
+          nearest = distance
+          best = i
+        }
+      })
+      setActive(best)
+    }
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [])
+
   return (
     <section id="portfolio" className="section portfolio">
       <div className="section-bg portfolio-bg" />
-      <SectionLabel index={3} label="Work" />
       <div className="shell">
-        <div className="portfolio-head">
-          <p className="eyebrow reveal">Selected Work</p>
-          <h2 className="h2 reveal">The work. The real-world impact.</h2>
-          <p className="body reveal">
-            Fast Next.js sites with GoHighLevel CRM and AI workflows behind them, built for builders and service
-            businesses.
+        <div className="wk-head">
+          <div>
+            <p className="about-eyebrow reveal">
+              <b>03</b>
+              <i>/</i>
+              Selected work
+            </p>
+            <h2 className="h2 reveal">
+              The work.
+              <br />
+              <span className="wk-dim">The real-world impact.</span>
+            </h2>
+            <p className="body reveal">
+              Fast Next.js sites with GoHighLevel CRM and AI workflows behind them, built for builders and service
+              businesses.
+            </p>
+          </div>
+          <p className="wk-count reveal">
+            {pad2(PROJECTS.length)} {PROJECTS.length === 1 ? 'project' : 'projects'}
           </p>
         </div>
-        <div className="projects">
-          {PROJECTS.map((p, i) => (
-            <a
-              href={p.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              key={p.title}
-              className="project reveal-card"
-              style={{ '--hue': p.hue }}
-            >
-              <div className="project-shot">
-                <div className="mock-window">
-                  <span />
-                  <span />
-                  <span />
-                  <em>{p.domain}</em>
-                </div>
-                <div className="mock-lines">
-                  <i />
-                  <i />
-                  <i />
-                </div>
-                <b className="project-num">{String(i + 1).padStart(2, '0')}</b>
+
+        <div className="wk-grid">
+          <div className="wk-list">
+            {PROJECTS.map((p, i) => {
+              const [lead, ...rest] = p.description.split(/(?<=[.!?])\s+/)
+              return (
+                <article
+                  key={p.title}
+                  ref={(el) => (articles.current[i] = el)}
+                  data-index={i}
+                  className={`wk-item${active === i ? ' is-active' : ''}`}
+                >
+                  <div className="wk-inline">
+                    <ProjectPreview project={p} />
+                  </div>
+                  <div className="wk-meta">
+                    <span className="wk-n">{pad2(i + 1)}</span>
+                    <span className="wk-line" />
+                    <span>{p.domain}</span>
+                    <span className="wk-sep">/</span>
+                    <span className="wk-type">{p.tags[0]}</span>
+                  </div>
+                  <h3>{p.title}</h3>
+                  <p className="wk-lead">{lead}</p>
+                  {rest.length > 0 && <p className="wk-text">{rest.join(' ')}</p>}
+                  <ul className="wk-tags">
+                    {p.tags.map((t) => (
+                      <li key={t}>{t}</li>
+                    ))}
+                  </ul>
+                  <div className="wk-actions">
+                    <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+                      Visit the live site <FiArrowUpRight />
+                    </a>
+                    <a href="#contact" className="btn btn-ghost">
+                      Start a similar project
+                    </a>
+                  </div>
+                </article>
+              )
+            })}
+          </div>
+
+          <div className="wk-side" aria-hidden="true">
+            <div className="wk-sticky">
+              <div className="wk-stack">
+                {PROJECTS.map((p, i) => (
+                  <a key={p.title} href={p.url} target="_blank" rel="noopener noreferrer" tabIndex={-1} className={`wk-slide${active === i ? ' is-active' : ''}`}>
+                    <ProjectPreview project={p} />
+                  </a>
+                ))}
               </div>
-              <div className="project-body">
-                <p className="project-tags">{p.tags.join(' · ')}</p>
-                <h3>{p.title}</h3>
-                <p className="project-desc">{p.description}</p>
-                <span className="project-link">
-                  Visit the live site <FiArrowRight />
+              <div className="wk-progress">
+                <span>
+                  {pad2(active + 1)} / {pad2(PROJECTS.length)}
                 </span>
+                <div>
+                  {PROJECTS.map((p, i) => (
+                    <i key={p.title} className={i <= active ? 'is-on' : ''} />
+                  ))}
+                </div>
               </div>
-            </a>
-          ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
