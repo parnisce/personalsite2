@@ -48,16 +48,51 @@ export const STATS = [
   { value: 24, suffix: '/7', label: 'Lead follow-up with Conversation AI' },
 ]
 
-// Swap `image` in for a real screenshot when you have one (e.g. '/projects/adlington.jpg' in /public).
+// Each project can have `image` (website view) and `mobileImage` (phone view): files in public/projects.
 export const PROJECTS = [
   {
-    title: 'Adlington Homes',
-    domain: 'adlingtonhomes.com',
-    url: 'https://adlingtonhomes.com/',
-    tags: ['Next.js', 'GoHighLevel CRM', 'AI Workflows'],
+    title: 'SonicRing',
+    domain: 'sonicring.com',
+    url: 'https://sonicring.com/',
+    tags: ['AI Workforce', 'Voice & SMS', 'Lead Follow-up'],
     description:
-      'A custom Next.js site for a 50-year Illawarra home builder. Clear service paths and project galleries feed a GoHighLevel consultation funnel, with AI workflows following up every enquiry.',
-    hue: 190,
+      'A full team of AI employees for your business. Every call answered, every lead followed up, every appointment booked.',
+    hue: 265,
+    image: '/projects/sonicring-desktop.webp',
+    mobileImage: '/projects/sonicring-mobile.webp',
+  },
+  {
+    title: 'Autophagy FastTrack',
+    domain: 'autophagytools.com',
+    url: 'https://autophagytools.com/',
+    tags: ['Mobile App', 'Fasting Tracker', 'Landing Page'],
+    description:
+      'A science-backed fasting tracker and autophagy calculator. It shows when autophagy starts in your body, with timelines and schedules personalised to you.',
+    hue: 320,
+    image: '/projects/autophagy-desktop.webp',
+    mobileImage: '/projects/autophagy-mobile.webp',
+  },
+  {
+    title: 'Prisma Digital',
+    domain: 'prismadig.com',
+    url: 'https://prismadig.com/',
+    tags: ['Software Development', 'Full-stack', 'Digital Transformation'],
+    description:
+      'Software development and digital transformation made easy. Customised full-stack software services, tailored to what the business actually needs.',
+    hue: 215,
+    image: '/projects/prisma-desktop.webp',
+    mobileImage: '/projects/prisma-mobile.webp',
+  },
+  {
+    title: 'TalentPro PH',
+    domain: 'talentproph.pages.dev',
+    url: 'https://talentproph.pages.dev/',
+    tags: ['Remote Hiring', 'AI Matching', 'Job Platform'],
+    description:
+      'A premium remote jobs platform. Discover top remote professionals, get AI-powered recommendations and build your dream team effortlessly.',
+    hue: 205,
+    image: '/projects/talentpro-desktop.webp',
+    mobileImage: '/projects/talentpro-mobile.webp',
   },
   {
     title: 'Diack Homes',
@@ -66,16 +101,9 @@ export const PROJECTS = [
     tags: ['Next.js', 'Multi-region', 'GoHighLevel CRM'],
     description:
       'One brand, two regions. A Next.js entry page routes Bay of Plenty and Christchurch visitors to their local site, and every lead lands in the right regional pipeline.',
-    hue: 160,
-  },
-  {
-    title: 'Gray Brothers Builders',
-    domain: 'graybro.co.nz',
-    url: 'https://graybro.co.nz/',
-    tags: ['Next.js', 'Online Estimate', 'AI Follow-up'],
-    description:
-      'An award-winning Dunedin builder. A Next.js online estimate tool qualifies leads before the first call, and GoHighLevel automations take it from there.',
-    hue: 30,
+    hue: 45,
+    image: '/projects/diack-desktop.webp',
+    mobileImage: '/projects/diack-mobile.webp',
   },
 ]
 

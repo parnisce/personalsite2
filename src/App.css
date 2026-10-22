@@ -2240,3 +2240,12 @@ html.logo-away .logo-canvas,
 html.logo-away .logo-fallback {
   opacity: 0;
 }
+
+/* Real screenshots inside the phone frame. */
+.wk-phone img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
