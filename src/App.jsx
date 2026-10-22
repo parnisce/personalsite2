@@ -573,25 +573,28 @@ function Testimonials() {
                       aria-label={`${i + 1} of ${count}`}
                       onClick={() => offset !== 0 && shown && setIndex(i)}
                     >
-                      <RiDoubleQuotesL className="tc-mark" aria-hidden="true" />
-                      <blockquote>{t.quote}</blockquote>
-                      <figcaption>
-                        <span className="avatar">{t.name[0]}</span>
-                        <span className="tc-who">
-                          <b>{t.name}</b>
-                          <small>{t.role}</small>
-                        </span>
-                        <a
-                          className="tc-in"
-                          href={LINKEDIN_RECOMMENDATIONS_URL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={`${t.name}'s recommendation on LinkedIn`}
-                          tabIndex={offset === 0 ? 0 : -1}
-                        >
-                          <FaLinkedinIn />
-                        </a>
-                      </figcaption>
+                      <div className="tc-face">
+                        <span className="tc-dotgrid" aria-hidden="true" />
+                        <RiDoubleQuotesL className="tc-mark" aria-hidden="true" />
+                        <blockquote>{t.quote}</blockquote>
+                        <figcaption>
+                          <span className="avatar">{t.name[0]}</span>
+                          <span className="tc-who">
+                            <b>{t.name}</b>
+                            <small>{t.role}</small>
+                          </span>
+                          <a
+                            className="tc-in"
+                            href={LINKEDIN_RECOMMENDATIONS_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`${t.name}'s recommendation on LinkedIn`}
+                            tabIndex={offset === 0 ? 0 : -1}
+                          >
+                            <FaLinkedinIn />
+                          </a>
+                        </figcaption>
+                      </div>
                     </figure>
                   )
                 })}
