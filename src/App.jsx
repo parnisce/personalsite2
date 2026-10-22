@@ -13,13 +13,14 @@ import FallbackLogo from './components/FallbackLogo'
 import { Footer, Header } from './components/SiteChrome'
 import SplitText from './components/SplitText'
 import {
+  ABOUT_LINKS,
+  ABOUT_PILLARS,
   BOOKING_URL,
   CONTACT,
   LINKEDIN_RECOMMENDATIONS_URL,
   PROJECTS,
   SERVICES,
   STACK,
-  STATS,
   TESTIMONIALS,
 } from './data'
 import { anchorToHands, logoState, MOBILE_BREAKPOINT, startLogoMotion } from './three/logoPath'
@@ -141,96 +142,227 @@ function About() {
     <section id="about" className="section about">
       <div className="section-bg about-bg" />
       <SectionLabel index={2} label="About" />
-      <div className="shell split split-right">
+      <div className="shell split split-right about-grid">
         <div className="logo-slot" />
-        <div>
-          <p className="eyebrow reveal">About Me</p>
+        <div className="about-copy">
+          <p className="about-eyebrow about-inline-label reveal">
+            <b>02</b>
+            <i>/</i>
+            About
+          </p>
           <h2 className="h2 reveal">
-            Hi, I&apos;m
+            From digital ideas
             <br />
-            Cyryl <span className="accent">Bitangcol</span>
+            <span className="accent">to systems that deliver.</span>
           </h2>
-          <p className="subhead reveal">I connect design, code and automation.</p>
-          <p className="body reveal">
-            A web developer from the Philippines. For over a decade I built WordPress sites for agencies,
-            consultancies and founders. It taught me what clients actually need: a site that looks right and brings
-            in work.
+          <p className="about-text reveal">
+            I&apos;m <b>Cyryl Bitangcol</b>, a web developer from the Philippines with over a decade of experience
+            building websites for agencies, consultancies, and founders. Today, I combine modern web development,
+            interface design, and intelligent automation to create fast, custom digital experiences that connect with
+            customers and help businesses grow.
           </p>
-          <p className="body reveal">
-            For the last two years I&apos;ve built on Next.js with Supabase, paired with GoHighLevel for funnels,
-            workflows and Conversation AI. With AI-assisted development, you get a custom, fast site in the time a
-            template used to take.
+          <p className="about-text reveal">
+            Using Next.js, Supabase, and GoHighLevel, I build websites, lead generation funnels, automated workflows,
+            and AI-powered customer experiences that reduce repetitive work and turn more opportunities into results.
           </p>
-          <div className="stats reveal">
-            {STATS.map((s) => (
-              <div key={s.label}>
-                <strong>
-                  <span className="count" data-to={s.value}>
-                    0
-                  </span>
-                  {s.suffix}
-                </strong>
-                <span>{s.label}</span>
-              </div>
+          <div className="about-links reveal">
+            {ABOUT_LINKS.map(({ label, href, internal }) => (
+              <a key={label} href={href} {...(internal ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>
+                {label} <FiArrowUpRight aria-hidden="true" />
+              </a>
             ))}
+            <span className="about-rule" aria-hidden="true" />
           </div>
-          <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn btn-ghost reveal">
-            Book a discovery call <FiArrowRight />
-          </a>
+        </div>
+      </div>
+      <div className="about-cards-wrap">
+        <div className="about-cards">
+          {ABOUT_PILLARS.map(({ title, description, Icon }) => (
+            <a key={title} href="#stack" className="about-card reveal-card">
+              <span className="about-card-icon">
+                <Icon aria-hidden="true" />
+              </span>
+              <h3>{title}</h3>
+              <p>{description}</p>
+              <span className="about-card-foot" aria-hidden="true">
+                <i />
+                <FiArrowRight />
+              </span>
+            </a>
+          ))}
         </div>
       </div>
     </section>
   )
 }
 
+// A browser-and-phone mock for a project: the real screenshot when the project has an `image`,
+// otherwise artwork generated from its colour.
+function ProjectPreview({ project }) {
+  return (
+    <div className="wk-preview" style={{ '--hue': project.hue }}>
+      <div className="wk-glow" aria-hidden="true" />
+      <div className="wk-frame">
+        <div className="wk-bar" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+          <em>{project.domain}</em>
+        </div>
+        <div className="wk-screen">
+          {project.image ? (
+            <img src={project.image} alt="" loading="lazy" />
+          ) : (
+            <div className="wk-art" aria-hidden="true">
+              <b>{project.title}</b>
+              <i />
+              <i />
+              <i />
+              <span />
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="wk-phone" aria-hidden="true">
+        <div className="wk-phone-screen">
+          <b />
+          <i />
+          <i />
+          <span />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const pad2 = (n) => String(n).padStart(2, '0')
+
 function Portfolio() {
+  const [active, setActive] = useState(0)
+  const articles = useRef([])
+
+  // The article closest to the middle of the screen decides which preview is shown on the right.
+  useEffect(() => {
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const middle = window.innerHeight / 2
+      let best = 0
+      let nearest = Infinity
+      articles.current.forEach((el, i) => {
+        if (!el) return
+        const r = el.getBoundingClientRect()
+        const distance = Math.abs((r.top + r.bottom) / 2 - middle)
+        if (distance < nearest) {
+          nearest = distance
+          best = i
+        }
+      })
+      setActive(best)
+    }
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [])
+
   return (
     <section id="portfolio" className="section portfolio">
       <div className="section-bg portfolio-bg" />
-      <SectionLabel index={3} label="Work" />
+      <SectionLabel index={3} label="Selected Work" />
       <div className="shell">
-        <div className="portfolio-head">
-          <p className="eyebrow reveal">Selected Work</p>
-          <h2 className="h2 reveal">The work. The real-world impact.</h2>
-          <p className="body reveal">
-            Fast Next.js sites with GoHighLevel CRM and AI workflows behind them, built for builders and service
-            businesses.
+        <div className="wk-head">
+          <div>
+            <p className="about-eyebrow wk-eyebrow reveal">
+              <b>03</b>
+              <i>/</i>
+              Selected work
+            </p>
+            <h2 className="h2 reveal">
+              The work.
+              <br />
+              <span className="wk-dim">The real-world impact.</span>
+            </h2>
+            <p className="body reveal">
+              Fast Next.js sites with GoHighLevel CRM and AI workflows behind them, built for builders and service
+              businesses.
+            </p>
+          </div>
+          <p className="wk-count reveal">
+            {pad2(PROJECTS.length)} {PROJECTS.length === 1 ? 'project' : 'projects'}
           </p>
         </div>
-        <div className="projects">
-          {PROJECTS.map((p, i) => (
-            <a
-              href={p.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              key={p.title}
-              className="project reveal-card"
-              style={{ '--hue': p.hue }}
-            >
-              <div className="project-shot">
-                <div className="mock-window">
-                  <span />
-                  <span />
-                  <span />
-                  <em>{p.domain}</em>
-                </div>
-                <div className="mock-lines">
-                  <i />
-                  <i />
-                  <i />
-                </div>
-                <b className="project-num">{String(i + 1).padStart(2, '0')}</b>
+
+        <div className="wk-grid">
+          <div className="wk-list">
+            {PROJECTS.map((p, i) => {
+              const [lead, ...rest] = p.description.split(/(?<=[.!?])\s+/)
+              return (
+                <article
+                  key={p.title}
+                  ref={(el) => (articles.current[i] = el)}
+                  data-index={i}
+                  className={`wk-item${active === i ? ' is-active' : ''}`}
+                >
+                  <div className="wk-inline">
+                    <ProjectPreview project={p} />
+                  </div>
+                  <div className="wk-meta">
+                    <span className="wk-n">{pad2(i + 1)}</span>
+                    <span className="wk-line" />
+                    <span>{p.domain}</span>
+                    <span className="wk-sep">/</span>
+                    <span className="wk-type">{p.tags[0]}</span>
+                  </div>
+                  <h3>{p.title}</h3>
+                  <p className="wk-lead">{lead}</p>
+                  {rest.length > 0 && <p className="wk-text">{rest.join(' ')}</p>}
+                  <ul className="wk-tags">
+                    {p.tags.map((t) => (
+                      <li key={t}>{t}</li>
+                    ))}
+                  </ul>
+                  <div className="wk-actions">
+                    <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+                      Visit the live site <FiArrowUpRight />
+                    </a>
+                    <a href="#contact" className="btn btn-ghost">
+                      Start a similar project
+                    </a>
+                  </div>
+                </article>
+              )
+            })}
+          </div>
+
+          <div className="wk-side" aria-hidden="true">
+            <div className="wk-sticky">
+              <div className="wk-stack">
+                {PROJECTS.map((p, i) => (
+                  <a key={p.title} href={p.url} target="_blank" rel="noopener noreferrer" tabIndex={-1} className={`wk-slide${active === i ? ' is-active' : ''}`}>
+                    <ProjectPreview project={p} />
+                  </a>
+                ))}
               </div>
-              <div className="project-body">
-                <p className="project-tags">{p.tags.join(' · ')}</p>
-                <h3>{p.title}</h3>
-                <p className="project-desc">{p.description}</p>
-                <span className="project-link">
-                  Visit the live site <FiArrowRight />
+              <div className="wk-progress">
+                <span>
+                  {pad2(active + 1)} / {pad2(PROJECTS.length)}
                 </span>
+                <div>
+                  {PROJECTS.map((p, i) => (
+                    <i key={p.title} className={i <= active ? 'is-on' : ''} />
+                  ))}
+                </div>
               </div>
-            </a>
-          ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -600,6 +732,7 @@ export default function App() {
         const CARD_ENTRANCES = [
           ['.project', { y: 90, scale: 0.95, rotationX: -8, transformPerspective: 900 }, 0.12],
           ['.service', { y: 56, scale: 0.96 }, 0.09],
+          ['.about-card', { y: 54, scale: 0.96 }, 0.12],
           ['.tool', { y: 30, scale: 0.8 }, 0.04],
           ['.quote', { x: 70 }, 0.12],
           ['.contact-link', { x: -50 }, 0.12],
