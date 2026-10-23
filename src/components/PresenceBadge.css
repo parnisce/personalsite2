@@ -66,3 +66,17 @@
     }
   }
 }
+
+/* On phones the pill shrinks to the dot and the number, so it hides as little as possible. */
+@layer components {
+  @media (max-width: 640px) {
+    .presence span {
+      display: none;
+    }
+
+    .presence {
+      padding: 7px 12px;
+      opacity: 0.85;
+    }
+  }
+}

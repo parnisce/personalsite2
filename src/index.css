@@ -91,3 +91,12 @@ html.lenis body {
 .lenis.lenis-smooth [data-lenis-prevent] {
   overscroll-behavior: contain;
 }
+
+/* iPhones zoom the page when a field is focused and its text is smaller than 16px. */
+@media (max-width: 900px) {
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
+}

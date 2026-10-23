@@ -1,6 +1,6 @@
 import { useId, useMemo, useState } from 'react'
 import { TbCheck, TbFlame, TbMoon, TbPlayerPlayFilled, TbPlayerStopFilled, TbPlus, TbTrash } from 'react-icons/tb'
-import logo from '../assets/logo.webp'
+import logo from '../assets/logo-sm.webp'
 import { useAdmin } from './ctx'
 import Modal from './Modal'
 import { addDays, dayTotals, entryCategory, formatDuration, loggedStreak, localDay, longDate, priorityRank, routineDueToday, routineTarget, sleepMinutes, topCategory, uid, weekDates } from './store'

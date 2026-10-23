@@ -24,6 +24,7 @@ import {
   STACK,
   TESTIMONIALS,
 } from './data'
+import { whenIdle } from './lib/idle'
 import { anchorToHands, logoState, MOBILE_BREAKPOINT, startLogoMotion } from './three/logoPath'
 import { scrollToTarget, setSmoothScroll } from './lib/smoothScroll'
 import './App.css'
@@ -34,6 +35,12 @@ const LogoScene = lazy(() => import('./three/LogoScene'))
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)'
 const MOBILE = `(max-width: ${MOBILE_BREAKPOINT - 1}px)`
+
+// The 3D logo is about 1 MB of code, so data-saver mode and 2G connections get the flat CSS logo.
+function isConstrainedNetwork() {
+  const c = navigator.connection
+  return Boolean(c && (c.saveData || /(^|-)2g$/.test(c.effectiveType ?? '')))
+}
 
 function hasWebGL() {
   try {
@@ -742,10 +749,35 @@ function Contact() {
 export default function App() {
   const root = useRef(null)
   const [active, setActive] = useState('hero')
-  const [webgl, setWebgl] = useState(hasWebGL)
+  const [webgl, setWebgl] = useState(() => hasWebGL() && !isConstrainedNetwork())
+  const [sceneReady, setSceneReady] = useState(false)
   const reduced = useMedia(REDUCED_MOTION)
   const mobile = useMedia(MOBILE)
   const onContextLost = useCallback(() => setWebgl(false), [])
+
+  // The 3D scene loads once the page has rendered and the browser is idle, then plays its intro.
+  useEffect(() => {
+    if (!webgl) return undefined
+    let cancelled = false
+    whenIdle(() => {
+      if (!cancelled) setSceneReady(true)
+    }, 2500)
+    return () => {
+      cancelled = true
+    }
+  }, [webgl])
+
+  const logoReady = !webgl || sceneReady
+  useGSAP(
+    () => {
+      if (reduced || !logoReady) return
+      gsap
+        .timeline({ delay: 0.1 })
+        .fromTo(logoState, { intro: 0 }, { intro: 1, duration: 1.4, ease: 'power2.out' }, 0)
+        .fromTo(logoState, { assemble: 0 }, { assemble: 1, duration: 1.9, ease: 'expo.inOut' }, 0)
+    },
+    { dependencies: [logoReady, reduced] },
+  )
 
   useGSAP(
     () => {
@@ -756,11 +788,7 @@ export default function App() {
       if (reduced) {
         gsap.set(logoState, { intro: 1, assemble: 1 })
       } else {
-        gsap
-          .timeline({ delay: 0.25 })
-          .fromTo(logoState, { intro: 0 }, { intro: 1, duration: 1.4, ease: 'power2.out' }, 0)
-          .fromTo(logoState, { assemble: 0 }, { assemble: 1, duration: 1.9, ease: 'expo.inOut' }, 0)
-          .from('.hero-in', { y: 24, opacity: 0, duration: 1, ease: 'power3.out', stagger: 0.12 }, 0.3)
+        gsap.from('.hero-in', { y: 24, opacity: 0, duration: 1, ease: 'power3.out', stagger: 0.12, delay: 0.55 })
       }
 
       // Master scroll driver for the logo: each section after the hero adds 0 -> 1 as it scrolls
@@ -991,9 +1019,11 @@ export default function App() {
     <div ref={root} className="app">
       <div className="scroll-progress" aria-hidden="true" />
       {webgl ? (
-        <Suspense fallback={null}>
-          <LogoScene mobile={mobile} onContextLost={onContextLost} />
-        </Suspense>
+        sceneReady && (
+          <Suspense fallback={null}>
+            <LogoScene mobile={mobile} onContextLost={onContextLost} />
+          </Suspense>
+        )
       ) : (
         <FallbackLogo />
       )}

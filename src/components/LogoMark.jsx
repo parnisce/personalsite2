@@ -1,4 +1,4 @@
-import logo from '../assets/logo.webp'
+import logo from '../assets/logo-sm.webp'
 
 // Flat logo for the header and footer (the same artwork the 3D logo is built from).
 export default function LogoMark({ size = 34 }) {

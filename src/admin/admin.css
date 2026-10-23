@@ -4059,3 +4059,114 @@
     }
   }
 }
+
+/* ---------------------------------------------------------------- Admin: phone and tablet menu */
+@layer components {
+  .adm-burger {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    /* The page never gets wider than the screen; the tab strip scrolls inside it. */
+    .adm,
+    .adm.is-collapsed {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .adm-side,
+    .adm-side.is-collapsed {
+      min-width: 0;
+      max-width: 100vw;
+    }
+
+    .adm-nav {
+      scrollbar-width: none;
+    }
+
+    .adm-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .adm-burger {
+      display: inline-grid;
+      place-items: center;
+      order: 2;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--line-2);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    .adm-side.is-open .adm-burger {
+      color: var(--accent);
+      border-color: rgba(0, 229, 255, 0.5);
+    }
+
+    /* The Website pages, categories and the rest live in a panel that drops down from the bar. */
+    .adm-side-extra {
+      display: none !important;
+    }
+
+    .adm-side.is-open .adm-side-extra {
+      display: block !important;
+      position: absolute;
+      inset: 100% 0 auto 0;
+      z-index: 45;
+      max-height: calc(100vh - 140px);
+      overflow-y: auto;
+      padding: 8px 14px 22px;
+      background: var(--side);
+      border-bottom: 1px solid var(--line-2);
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.55);
+    }
+
+    .adm-side.is-open .adm-side-extra .adm-nav {
+      display: grid;
+      overflow: visible;
+      gap: 2px;
+    }
+
+    .adm-side.is-open .adm-side-extra .adm-nav a {
+      width: 100%;
+      min-height: 46px;
+      padding: 0 12px;
+    }
+
+    .adm-side.is-open .adm-side-extra .adm-nav a span {
+      display: inline;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------- Admin: touch screens */
+@layer components {
+  @media (pointer: coarse) {
+    .adm-tick,
+    .adm-play,
+    .adm-icon-btn,
+    .adm-textbtn {
+      position: relative;
+    }
+
+    /* A larger invisible hit area; the drawn size stays the same. */
+    .adm-tick::after,
+    .adm-play::after,
+    .adm-icon-btn::after,
+    .adm-textbtn::after {
+      content: '';
+      position: absolute;
+      inset: -8px;
+    }
+
+    .adm-pills button,
+    .adm-seg button,
+    .adm-donebtn,
+    .adm-btn {
+      min-height: 42px;
+    }
+  }
+}

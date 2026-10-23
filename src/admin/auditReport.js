@@ -14,12 +14,13 @@ export const EVIDENCE = [
   { check: 'Production build', result: 'Passes; four pages built (home, tools, resources, admin)', ok: true },
   { check: 'Lint (oxlint)', result: '0 errors, 14 warnings (React effect and fast-refresh rules)', ok: false },
   { check: 'Automated tests', result: 'None in the project', ok: false },
+  { check: 'Home page load (4x slower CPU, 9 Mbps)', result: 'First paint 3.5 s -> 2.2 s on desktop and 1.8 s on a phone-sized screen', ok: true },
   { check: 'Outdated packages', result: '2 minor updates available (@react-three/postprocessing, oxlint)', ok: true },
   { check: 'Tracking (analytics)', result: 'First-party, cookie-free page views and events saved to Supabase; no IPs stored; Do Not Track, admin, bots and localhost excluded', ok: true },
   { check: 'Secrets in the repository', result: 'None found; only the public Supabase publishable key is committed', ok: true },
 ]
 
-export const AREAS = ['Security', 'Tracking & privacy', 'SEO', 'Performance', 'Accessibility', 'Code & process']
+export const AREAS = ['Security', 'Tracking & privacy', 'SEO', 'Performance', 'Accessibility', 'Mobile & responsive', 'Code & process']
 export const SEVERITIES = ['high', 'medium', 'low', 'info']
 
 // status: 'open' needs action, 'fixed' was resolved, 'pass' is a check that came out fine.
@@ -206,37 +207,37 @@ export const FINDINGS = [
     id: 'PERF-1',
     area: 'Performance',
     severity: 'medium',
-    status: 'open',
+    status: 'fixed',
     title: 'Home page waits up to 2.5 seconds for Supabase before rendering',
-    detail: 'main.jsx fetches the editable site content first so animations are built on the final page. On a slow connection or if Supabase is slow, the page stays blank for up to 2.5 seconds.',
-    action: 'Render immediately with the built-in content, then swap in saved content, or cache the last content in localStorage and refresh it in the background.',
+    detail: 'The home page used to wait up to 2.5 seconds for Supabase before drawing. It now draws straight away from the last saved copy of the content and refreshes that copy in the background.',
+    action: '',
   },
   {
     id: 'PERF-2',
     area: 'Performance',
-    severity: 'medium',
+    severity: 'low',
     status: 'open',
     title: '3D logo bundle is about 1 MB',
-    detail: 'The Three.js scene (with post-processing) is loaded on the home page. It is lazy loaded and has a CSS fallback, but it is the largest part of the first visit on mobile.',
-    action: 'Skip the 3D scene on small screens and slow connections, or load it after the page is interactive.',
+    detail: 'The 3D scene (about 280 KB over the wire) now loads after the page has drawn and the browser is idle, and data-saver and 2G visitors get the flat logo instead. It is still the biggest single download on the home page.',
+    action: 'Optional: skip the 3D scene on small phones too.',
   },
   {
     id: 'PERF-3',
     area: 'Performance',
     severity: 'low',
-    status: 'open',
+    status: 'fixed',
     title: 'Supabase client (~210 KB) ships to every public page',
-    detail: 'It is needed for content, the contact form and the visitor counter, but it adds weight before any of those run.',
-    action: 'Load it lazily after first paint for the visitor counter and on form submit.',
+    detail: 'The Supabase client (about 200 KB) now loads after the home page has drawn, for the visitor count, likes, tracking and the contact form, instead of in the first bundle.',
+    action: '',
   },
   {
     id: 'PERF-4',
     area: 'Performance',
     severity: 'low',
-    status: 'open',
+    status: 'fixed',
     title: 'Unused assets and a large logo file',
-    detail: 'src/assets/hero.png, react.svg and vite.svg are not used. logo.webp is about 129 KB, which is large for a logo.',
-    action: 'Delete the unused files and export the logo as an optimised SVG or a smaller webp.',
+    detail: 'Unused template images were removed, and the logo shown in the header, footer and admin is now a small 8 KB file instead of the 129 KB original (which is still used by the 3D scene, recompressed to about 86 KB).',
+    action: '',
   },
   {
     id: 'PERF-5',
@@ -275,6 +276,26 @@ export const FINDINGS = [
     title: 'Motion preferences, labels and form errors are handled',
     detail: 'prefers-reduced-motion is respected in the animations; every image has alt text; form fields have labels and errors use role="alert".',
     action: '',
+  },
+
+  // ---- Mobile & responsive
+  {
+    id: 'MOB-1',
+    area: 'Mobile & responsive',
+    severity: 'info',
+    status: 'pass',
+    title: 'No sideways scrolling on any page',
+    detail: 'The home page, Resources, Free Tools and every admin page were checked at 375, 768, 900, 1024 and 1180 pixels wide. None is wider than the screen. The public pages and the admin both have a menu button on phones and small tablets.',
+    action: '',
+  },
+  {
+    id: 'MOB-2',
+    area: 'Mobile & responsive',
+    severity: 'low',
+    status: 'open',
+    title: 'Only checked in a desktop browser emulating phones',
+    detail: 'The layouts were tested in Chrome with a phone-sized screen and touch on, not on real iPhones and Android phones. Safari in particular can differ (address-bar height, 3D transforms, fixed elements).',
+    action: 'Open the live site on an iPhone and an Android phone and walk through each page once.',
   },
 
   // ---- Code & process
