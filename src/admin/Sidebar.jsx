@@ -10,6 +10,8 @@ import {
   TbFileText,
   TbInbox,
   TbLogout,
+  TbMenu2,
+  TbX,
   TbFolder,
   TbLayoutSidebar,
   TbPlayerStopFilled,
@@ -102,9 +104,21 @@ export default function Sidebar({ route, collapsed, onToggle, onExport, onImport
   const week = weekActivity(state, today)
   const catTime = categoryTimeThisWeek(state, today)
   const active = route.name === 'project' ? 'projects' : route.name
+  const [open, setOpen] = useState(false) // the full menu on phones and tablets
+
+  // The menu closes when you pick a page and when you press Escape.
+  useEffect(() => {
+    setOpen(false) // eslint-disable-line react-hooks/set-state-in-effect
+  }, [route.name, route.id])
+  useEffect(() => {
+    if (!open) return undefined
+    const onKey = (e) => e.key === 'Escape' && setOpen(false)
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [open])
 
   return (
-    <aside className={`adm-side${collapsed ? ' is-collapsed' : ''}`}>
+    <aside className={`adm-side${collapsed ? ' is-collapsed' : ''}${open ? ' is-open' : ''}`}>
       <div className="adm-side-top">
         <a href="#/projects" className="adm-brand" aria-label="Dashboard">
           <LogoMark size={30} />
@@ -136,6 +150,10 @@ export default function Sidebar({ route, collapsed, onToggle, onExport, onImport
         </button>
       </Menu>
 
+      <button type="button" className="adm-burger" aria-label={open ? 'Close the menu' : 'Open the menu'} aria-expanded={open} aria-controls="adm-more" onClick={() => setOpen((o) => !o)}>
+        {open ? <TbX aria-hidden="true" /> : <TbMenu2 aria-hidden="true" />}
+      </button>
+
       <TimerPill />
 
       <nav className="adm-nav" aria-label="Admin">
@@ -147,7 +165,7 @@ export default function Sidebar({ route, collapsed, onToggle, onExport, onImport
         ))}
       </nav>
 
-      <div className="adm-side-extra">
+      <div className="adm-side-extra" id="adm-more">
         <p className="adm-caption">Website</p>
         <nav className="adm-nav" aria-label="Website">
           <a href="#/enquiries" className={active === 'enquiries' ? 'is-active' : ''} title={collapsed ? 'Enquiries' : undefined}>

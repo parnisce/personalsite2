@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { PROJECTS, STATS, TESTIMONIALS } from '../data'
-import { CONTENT_SHAPES } from '../lib/content'
+import { CONTENT_SHAPES, writeCachedContent } from '../lib/content'
 import { supabase } from '../lib/supabase'
 import { useAdmin } from './ctx'
 
@@ -59,6 +59,7 @@ function Editor({ section }) {
       return
     }
     setSaved(updatedAt)
+    writeCachedContent(section.key, value)
     toast(`${section.title} saved. Reload the site to see it.`)
   }
 

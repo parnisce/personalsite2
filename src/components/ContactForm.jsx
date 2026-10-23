@@ -1,7 +1,7 @@
 import { useId, useState } from 'react'
 import { FiArrowUpRight, FiCheck, FiChevronDown } from 'react-icons/fi'
 import { BOOKING_URL, CONTACT, SERVICES } from '../data'
-import { supabase } from '../lib/supabase'
+import { getSupabase } from '../lib/supabaseLazy'
 import { track } from '../lib/track'
 
 const INTERESTS = [...SERVICES.map((s) => s.title), 'Something else']
@@ -85,13 +85,19 @@ export default function ContactForm() {
       return
     }
     setStatus('sending')
-    const { error } = await supabase.from('enquiries').insert({
-      name: values.name.trim(),
-      email: values.email.trim(),
-      phone: values.phone.trim() || null,
-      interest: values.interest,
-      message: values.message.trim(),
-    })
+    let error = null
+    try {
+      const supabase = await getSupabase()
+      ;({ error } = await supabase.from('enquiries').insert({
+        name: values.name.trim(),
+        email: values.email.trim(),
+        phone: values.phone.trim() || null,
+        interest: values.interest,
+        message: values.message.trim(),
+      }))
+    } catch (e) {
+      error = e
+    }
     if (error) {
       // Saving failed (offline, or the table is not set up): hand the message to the visitor's email app instead.
       openEmailApp(values)

@@ -1,4 +1,5 @@
-import { FiArrowRight, FiArrowUp, FiArrowUpRight } from 'react-icons/fi'
+import { useEffect, useState } from 'react'
+import { FiArrowRight, FiArrowUp, FiArrowUpRight, FiMenu, FiX } from 'react-icons/fi'
 import { CONTACT, NAV } from '../data'
 import { scrollToTarget } from '../lib/smoothScroll'
 import LogoMark from './LogoMark'
@@ -21,8 +22,22 @@ function Brand({ onHome, size }) {
 }
 
 export function Header({ active, onHome = true }) {
+  const [open, setOpen] = useState(false) // the menu on phones and small tablets
+
+  useEffect(() => {
+    if (!open) return undefined
+    const onKey = (e) => e.key === 'Escape' && setOpen(false)
+    const onResize = () => window.innerWidth > 1180 && setOpen(false)
+    document.addEventListener('keydown', onKey)
+    window.addEventListener('resize', onResize)
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      window.removeEventListener('resize', onResize)
+    }
+  }, [open])
+
   return (
-    <header className="header">
+    <header className={`header${open ? ' is-menu-open' : ''}`}>
       <div className="header-inner">
         <Brand onHome={onHome} size={38} />
         <nav className="nav" aria-label="Main">
@@ -33,6 +48,21 @@ export function Header({ active, onHome = true }) {
           ))}
         </nav>
         <a href={onHome ? '#contact' : '/#contact'} className="btn btn-ghost btn-sm">
+          Let&apos;s Work Together <FiArrowRight />
+        </a>
+        <button type="button" className="nav-toggle" aria-label={open ? 'Close the menu' : 'Open the menu'} aria-expanded={open} aria-controls="mobile-nav" onClick={() => setOpen((o) => !o)}>
+          {open ? <FiX aria-hidden="true" /> : <FiMenu aria-hidden="true" />}
+        </button>
+      </div>
+      <div id="mobile-nav" className="mobile-nav" hidden={!open}>
+        <nav aria-label="Mobile">
+          {NAV.map((n) => (
+            <a key={n.id} href={linkFor(n, onHome)} className={active === n.id ? 'is-active' : ''} onClick={() => setOpen(false)}>
+              {n.label}
+            </a>
+          ))}
+        </nav>
+        <a href={onHome ? '#contact' : '/#contact'} className="btn btn-primary" onClick={() => setOpen(false)}>
           Let&apos;s Work Together <FiArrowRight />
         </a>
       </div>

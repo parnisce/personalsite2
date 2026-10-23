@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { FiHeart } from 'react-icons/fi'
-import { supabase } from '../lib/supabase'
+import { getSupabase } from '../lib/supabaseLazy'
 import './HeroExtras.css'
 
 // ---------------------------------------------------------------- availability + likes
@@ -23,9 +23,12 @@ function LikeButton() {
 
   useEffect(() => {
     let live = true
-    supabase.rpc('get_likes').then(({ data, error }) => {
-      if (live && !error && Number.isFinite(Number(data))) setCount(Number(data))
-    })
+    getSupabase()
+      .then((supabase) => supabase.rpc('get_likes'))
+      .then(({ data, error }) => {
+        if (live && !error && Number.isFinite(Number(data))) setCount(Number(data))
+      })
+      .catch(() => {})
     return () => {
       live = false
     }
@@ -40,10 +43,12 @@ function LikeButton() {
     } catch {
       // The like still counts for this visit.
     }
-    supabase.from('portfolio_likes').insert({}).then(
-      () => {},
-      () => {},
-    )
+    getSupabase()
+      .then((supabase) => supabase.from('portfolio_likes').insert({}))
+      .then(
+        () => {},
+        () => {},
+      )
   }
 
   return (

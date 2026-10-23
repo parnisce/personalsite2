@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { getSupabase } from './supabaseLazy'
 
 // First-party, cookie-free analytics. Each page view and a few events are saved to the
 // analytics_events table in Supabase. No IP address or personal detail is stored, and the only
@@ -64,9 +64,9 @@ function referrerHost() {
 
 function send(row) {
   try {
-    supabase
-      .from('analytics_events')
-      .insert({ session_id: sessionId(), device: deviceType(), ...row })
+    const payload = { session_id: sessionId(), device: deviceType(), ...row }
+    getSupabase()
+      .then((supabase) => supabase.from('analytics_events').insert(payload))
       .then(
         () => {},
         () => {},

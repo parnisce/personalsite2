@@ -373,7 +373,7 @@ function seedState() {
     { id: uid(), at: ago(2), taskId: transcriber.id, title: transcriber.title, text: 'Marked as done' },
     { id: uid(), at: new Date().toISOString(), taskId: formKey.id, title: formKey.title, text: 'Created' },
   ]
-  return { version: 2, categories: DEFAULT_CATEGORIES.map((c) => ({ ...c })), projects: [site, tools], tasks, routines, entries, activity, timer: null }
+  return { version: 2, categories: DEFAULT_CATEGORIES.map((c) => ({ ...c })), projects: [site, tools], tasks, routines, entries, sleep: [], activity, timer: null }
 }
 
 // ---------------------------------------------------------------- reducer

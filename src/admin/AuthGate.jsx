@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from 'react'
-import logo from '../assets/logo.webp'
+import logo from '../assets/logo-sm.webp'
 import { supabase } from '../lib/supabase'
 import { EXCLUDE_KEY } from '../lib/track'
 import { STORAGE_KEY } from './store'
