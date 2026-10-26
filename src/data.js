@@ -1,5 +1,5 @@
 // Site content, taken from cyrusbitangcol.com (the name shown on this site is Cyryl).
-import { FaFacebookF, FaInstagram, FaLinkedinIn } from 'react-icons/fa6'
+import { FaBehance, FaFacebookF, FaGithub, FaInstagram, FaLinkedinIn } from 'react-icons/fa6'
 import {
   SiClaude,
   SiCursor,
@@ -42,7 +42,7 @@ export const NAV = [
 
 export const BOOKING_URL = 'https://go.cyrusbitangcol.com/book-a-call'
 export const LINKEDIN_RECOMMENDATIONS_URL =
-  'https://www.linkedin.com/in/cyrus-bitangcol/details/recommendations/?detailScreenTabIndex=0'
+  'https://www.linkedin.com/in/cyryl-bitangcol/details/recommendations/?detailScreenTabIndex=0'
 
 export const STATS = [
   { value: 17, suffix: '+', label: 'Years building the web' },
@@ -240,16 +240,18 @@ export const CONTACT = {
   location: 'Based in the Philippines',
   reach: 'Working with clients worldwide',
   socials: [
-    { label: 'Facebook', Icon: FaFacebookF, href: 'https://www.facebook.com/CyrusBitangcolOfficial' },
-    { label: 'LinkedIn', Icon: FaLinkedinIn, href: 'https://www.linkedin.com/in/cyrus-bitangcol/' },
-    { label: 'Instagram', Icon: FaInstagram, href: 'https://www.instagram.com/iamcyrusbitangcol/' },
+    { label: 'Facebook', Icon: FaFacebookF, href: 'https://www.facebook.com/cyryldbitangcolofficial' },
+    { label: 'Instagram', Icon: FaInstagram, href: 'https://www.instagram.com/cyryldb19/' },
+    { label: 'Behance', Icon: FaBehance, href: 'https://www.behance.net/cyrylbitangcol' },
+    { label: 'LinkedIn', Icon: FaLinkedinIn, href: 'https://www.linkedin.com/in/cyryl-bitangcol/' },
+    { label: 'GitHub', Icon: FaGithub, href: 'https://github.com/parnisce' },
   ],
 }
 
 // About section: the three link underlines and the three pillars under the intro.
 export const ABOUT_LINKS = [
   { label: 'GitHub', href: 'https://github.com/parnisce' },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/cyrus-bitangcol/' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/cyryl-bitangcol/' },
   { label: 'Portfolio', href: '#portfolio', internal: true },
 ]
 
