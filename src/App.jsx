@@ -436,11 +436,11 @@ function Journey() {
               Journey
             </p>
             <h2 className="h2">
-              Seventeen years of
+              Where I've
               <br />
-              <span className="wk-dim">steady progress.</span>
+              <span className="wk-dim">shipped work.</span>
             </h2>
-            <p className="body">From my first web page to AI-powered systems that follow up with customers, a short history of how I got here.</p>
+            <p className="body">Over a decade of building websites, ads and digital products across agencies, consultancies and startups.</p>
             <div className="jr-reading" aria-hidden="true">
               <p className="jr-reading-label">You are reading</p>
               <p className="jr-year" key={current.big ?? current.year}>
