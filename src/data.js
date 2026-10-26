@@ -94,17 +94,6 @@ export const PROJECTS = [
     image: '/projects/talentpro-desktop.webp',
     mobileImage: '/projects/talentpro-mobile.webp',
   },
-  {
-    title: 'Diack Homes',
-    domain: 'diackhomes.co.nz',
-    url: 'https://diackhomes.co.nz/',
-    tags: ['Next.js', 'Multi-region', 'GoHighLevel CRM'],
-    description:
-      'One brand, two regions. A Next.js entry page routes Bay of Plenty and Christchurch visitors to their local site, and every lead lands in the right regional pipeline.',
-    hue: 45,
-    image: '/projects/diack-desktop.webp',
-    mobileImage: '/projects/diack-mobile.webp',
-  },
 ]
 
 // LinkedIn recommendations, quoted word for word.
