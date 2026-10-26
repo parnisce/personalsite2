@@ -56,7 +56,7 @@ export const DESKTOP_STOPS = [
   { x: -0.5, y: -0.04, scale: 0.28, rx: -0.08, ry: 0.4, rz: 0.04 }, // 02 about, left
   { x: 0.64, y: 0.38, scale: 0.23, rx: 0.15, ry: -0.5, rz: -0.08 }, // 03 portfolio, right
   { x: -0.62, y: -0.02, scale: 0.22, rx: -0.1, ry: 0.45, rz: 0.05 }, // 04 testimonials, left
-  { x: 0.62, y: 0.04, scale: 0.25, rx: 0.08, ry: -0.45, rz: -0.04 }, // 05 tech stack, right
+  { x: 0.66, y: 0.5, scale: 0.2, rx: 0.08, ry: -0.45, rz: -0.04 }, // 05 skills, top right beside the heading
   { x: 0, y: 0.47, scale: 0.21, rx: 0, ry: 0, rz: 0 }, // 06 contact, centre, final pose
 ]
 

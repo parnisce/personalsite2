@@ -18,12 +18,14 @@ import {
   TbBolt,
   TbBrandOpenai,
   TbCode,
+  TbDatabase,
   TbGitFork,
   TbHierarchy3,
   TbMessageChatbot,
   TbPalette,
   TbRoute,
   TbStack2,
+  TbTool,
   TbTag,
 } from 'react-icons/tb'
 
@@ -33,7 +35,7 @@ export const NAV = [
   { id: 'portfolio', label: 'Work' },
   { id: 'journey', label: 'Journey' },
   { id: 'testimonials', label: 'Testimonials' },
-  { id: 'stack', label: 'Services' },
+  { id: 'stack', label: 'Skills' },
   { id: 'contact', label: 'Contact' },
   { id: 'resources', label: 'Resources', href: '/resources/' },
 ]
@@ -174,22 +176,62 @@ export const SERVICES = [
 ]
 
 export const STACK = [
-  { name: 'Next.js', Icon: SiNextdotjs, color: '#ffffff' },
-  { name: 'React', Icon: SiReact, color: '#61dafb' },
-  { name: 'TypeScript', Icon: SiTypescript, color: '#3178c6' },
-  { name: 'Tailwind CSS', Icon: SiTailwindcss, color: '#38bdf8' },
-  { name: 'Supabase', Icon: SiSupabase, color: '#3ecf8e' },
-  { name: 'GoHighLevel', Icon: TbHierarchy3, color: '#00e5ff' },
-  { name: 'Conversation AI', Icon: TbMessageChatbot, color: '#00c7d9' },
-  { name: 'Figma', Icon: SiFigma, color: '#f24e1e' },
-  { name: 'Claude Code', Icon: SiClaude, color: '#d97757' },
-  { name: 'Codex', Icon: TbBrandOpenai, color: '#ffffff' },
-  { name: 'Cursor', Icon: SiCursor, color: '#ffffff' },
-  { name: 'Three.js', Icon: SiThreedotjs, color: '#ffffff' },
-  { name: 'GSAP', Icon: SiGreensock, color: '#88ce02' },
-  { name: 'WordPress', Icon: SiWordpress, color: '#ffffff' },
-  { name: 'Elementor', Icon: SiElementor, color: '#d63c88' },
-  { name: 'FunnelKit', Icon: TbBolt, color: '#7c6cff' },
+  { name: 'Next.js', Icon: SiNextdotjs, color: '#ffffff', used: 'Business websites and web apps, with Supabase behind them.' },
+  { name: 'React', Icon: SiReact, color: '#61dafb', used: 'Interactive interfaces, including this site.' },
+  { name: 'TypeScript', Icon: SiTypescript, color: '#3178c6', used: 'Typed code for sites that need to keep growing.' },
+  { name: 'Tailwind CSS', Icon: SiTailwindcss, color: '#38bdf8', used: 'Fast, consistent styling on client builds.' },
+  { name: 'Supabase', Icon: SiSupabase, color: '#3ecf8e', used: 'Database, login and live data for the admin and forms.' },
+  { name: 'GoHighLevel', Icon: TbHierarchy3, color: '#00e5ff', used: 'Funnels, pipelines, calendars and CRM for client businesses.' },
+  { name: 'Conversation AI', Icon: TbMessageChatbot, color: '#00c7d9', used: 'Assistants that answer, qualify and book around the clock.' },
+  { name: 'Figma', Icon: SiFigma, color: '#f24e1e', used: 'Layouts and page visuals before anything is built.' },
+  { name: 'Claude Code', Icon: SiClaude, color: '#d97757', used: 'Pair-programming this site and client builds.' },
+  { name: 'Codex', Icon: TbBrandOpenai, color: '#ffffff', used: 'Reviews and quick refactors.' },
+  { name: 'Cursor', Icon: SiCursor, color: '#ffffff', used: 'Day-to-day editing with AI help.' },
+  { name: 'Three.js', Icon: SiThreedotjs, color: '#ffffff', used: 'The 3D logo on this site.' },
+  { name: 'GSAP', Icon: SiGreensock, color: '#88ce02', used: 'Scroll and entrance animation across this site.' },
+  { name: 'WordPress', Icon: SiWordpress, color: '#ffffff', used: 'Client sites that need an editor the team already knows.' },
+  { name: 'Elementor', Icon: SiElementor, color: '#d63c88', used: 'Page building on WordPress projects.' },
+  { name: 'FunnelKit', Icon: TbBolt, color: '#7c6cff', used: 'Checkout and sales funnels on WordPress.' },
+]
+
+// Accordion rows in the skills section. `items` are shown when a row is open.
+export const SKILL_GROUPS = [
+  {
+    title: 'Frontend',
+    Icon: TbCode,
+    description: 'Interfaces that feel fast, stay accessible, and hold up as the product grows.',
+    items: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'GSAP', 'Three.js'],
+  },
+  {
+    title: 'Backend & Data',
+    Icon: TbDatabase,
+    description: 'Secure data, logins and forms behind the site, with nothing to patch overnight.',
+    items: ['Supabase', 'Next.js', 'TypeScript'],
+  },
+  {
+    title: 'Funnels & CRM',
+    Icon: TbRoute,
+    description: 'Funnels, pipelines and calendars with your website wired straight into them.',
+    items: ['GoHighLevel', 'FunnelKit', 'WordPress', 'Elementor'],
+  },
+  {
+    title: 'Automation & AI',
+    Icon: TbBolt,
+    description: 'Follow-up that runs while you sleep, and assistants that reply in seconds.',
+    items: ['Conversation AI', 'GoHighLevel', 'Claude Code'],
+  },
+  {
+    title: 'Design',
+    Icon: TbPalette,
+    description: 'Brand, layout and page visuals made by the same hands that build the site.',
+    items: ['Figma', 'Tailwind CSS', 'GSAP'],
+  },
+  {
+    title: 'Tooling',
+    Icon: TbTool,
+    description: 'Development tools, deployment and AI helpers.',
+    items: ['Claude Code', 'Codex', 'Cursor'],
+  },
 ]
 
 
