@@ -2632,27 +2632,6 @@ html.logo-away .logo-fallback {
   max-width: 560px;
 }
 
-.sk-note {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 8px 18px;
-  margin-top: 18px;
-}
-
-.sk-note em {
-  font-family: 'Caveat', 'Segoe Script', cursive;
-  font-size: 26px;
-  color: #cfe6ff;
-}
-
-.sk-note span {
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
 .sk-list {
   list-style: none;
   display: grid;

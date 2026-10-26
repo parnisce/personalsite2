@@ -662,10 +662,6 @@ function TechStack() {
               A modern stack for modern problems. Click any category to explore the tools I work with, from the
               website to the funnel to the follow-up.
             </p>
-            <p className="sk-note reveal">
-              <em>always a work in progress</em>
-              <span>Updated Oct 2026</span>
-            </p>
           </div>
         </div>
 
