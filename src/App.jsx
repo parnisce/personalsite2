@@ -20,7 +20,7 @@ import {
   CONTACT,
   LINKEDIN_RECOMMENDATIONS_URL,
   PROJECTS,
-  SERVICES,
+  SKILL_GROUPS,
   STACK,
   TESTIMONIALS,
 } from './data'
@@ -621,44 +621,130 @@ function Testimonials() {
   )
 }
 
+const TERMINAL_COMMANDS = ['help', 'projects', 'skills', 'experience', 'contact']
+
+function terminalOutput(cmd) {
+  switch (cmd) {
+    case 'projects':
+      return PROJECTS.map((p) => `${p.title}  ·  ${p.domain}`)
+    case 'skills':
+      return SKILL_GROUPS.map((g) => `${g.title}: ${g.items.join(', ')}`)
+    case 'experience':
+      return JOURNEY.map((j) => `${j.year}  ${j.title}`)
+    case 'contact':
+      return [CONTACT.email, CONTACT.location]
+    default:
+      return ['Try: ' + TERMINAL_COMMANDS.filter((c) => c !== 'help').join(', ')]
+  }
+}
+
 function TechStack() {
+  const [open, setOpen] = useState(0)
+  const [tool, setTool] = useState(null)
+  const [cmd, setCmd] = useState('skills')
+  const picked = STACK.find((t) => t.name === tool)
+  const lines = terminalOutput(cmd)
+
   return (
     <section id="stack" className="section stack">
       <div className="section-bg stack-bg" />
-      <SectionLabel index={6} label="Services" />
-      <div className="shell split split-left">
-        <div>
-          <p className="eyebrow reveal">How I Work</p>
-          <h2 className="h2 reveal">
-            Your whole online presence.
-            <br />
-            <span className="accent">One pair of hands.</span>
-          </h2>
-          <p className="body reveal">
-            Website, funnels, automation and AI follow-up, handled by one person who sees the whole picture. No
-            hand-offs, no chasing five freelancers, no lost leads in between.
-          </p>
-          <div className="services">
-            {SERVICES.map(({ title, tagline, description, Icon }) => (
-              <article className="service reveal-card" key={title}>
-                <Icon className="service-icon" />
-                <h3>{title}</h3>
-                <p className="service-tagline">{tagline}</p>
-                <p className="service-desc">{description}</p>
-              </article>
-            ))}
-          </div>
-          <p className="eyebrow stack-title reveal">The Stack Behind Every Build</p>
-          <div className="tools">
-            {STACK.map(({ name, Icon, color }) => (
-              <div className="tool reveal-card" key={name}>
-                <Icon style={{ color }} />
-                <span>{name}</span>
-              </div>
-            ))}
+      <SectionLabel index={6} label="Skills" />
+      <div className="shell sk">
+        <div className="sk-head">
+          <div>
+            <p className="eyebrow reveal">Skills &amp; Tech Stack</p>
+            <h2 className="h2 reveal">
+              Technologies I use
+              <br />
+              <span className="accent">to build real solutions.</span>
+            </h2>
+            <p className="body reveal">
+              A modern stack for modern problems. Click any category to explore the tools I work with, from the
+              website to the funnel to the follow-up.
+            </p>
+            <p className="sk-note reveal">
+              <em>always a work in progress</em>
+              <span>Updated Oct 2026</span>
+            </p>
           </div>
         </div>
-        <div className="logo-slot" />
+
+        <ol className="sk-list">
+          {SKILL_GROUPS.map(({ title, description, Icon, items }, i) => {
+            const isOpen = open === i
+            return (
+              <li key={title} className={`sk-row reveal-card${isOpen ? ' is-open' : ''}`}>
+                <button type="button" className="sk-bar" aria-expanded={isOpen} aria-controls={`sk-panel-${i}`} onClick={() => setOpen(isOpen ? -1 : i)}>
+                  <span className="sk-num">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="sk-icon">
+                    <Icon />
+                  </span>
+                  <span className="sk-name">{title}</span>
+                  <span className="sk-desc">{description}</span>
+                  <span className="sk-count">{items.length}</span>
+                  <span className="sk-plus" aria-hidden="true" />
+                </button>
+                <div className="sk-panel" id={`sk-panel-${i}`} role="region" aria-label={`${title} tools`}>
+                  <div className="sk-panel-inner">
+                    <ul className="sk-items">
+                      {items.map((name) => {
+                        const t = STACK.find((x) => x.name === name)
+                        const Tool = t?.Icon
+                        return (
+                          <li key={name}>
+                            <button type="button" className={tool === name ? 'is-on' : ''} onClick={() => setTool(tool === name ? null : name)} tabIndex={isOpen ? 0 : -1}>
+                              {Tool && <Tool style={{ color: t.color }} />}
+                              {name}
+                            </button>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </div>
+                </div>
+              </li>
+            )
+          })}
+        </ol>
+
+        <div className="sk-lower">
+          <div className="sk-toolkit reveal-card">
+            <p className="eyebrow">Toolkit</p>
+            <h3>What I reach for daily.</h3>
+            <p className="sk-hint">{picked ? picked.used : 'Click a tech to see where I’ve used it.'}</p>
+            <div className="sk-chips">
+              {STACK.map(({ name, Icon, color }) => (
+                <button key={name} type="button" className={`sk-chip${tool === name ? ' is-on' : ''}`} aria-pressed={tool === name} onClick={() => setTool(tool === name ? null : name)}>
+                  <Icon style={{ color }} />
+                  {name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="sk-term reveal-card" aria-label="Terminal">
+            <div className="sk-term-bar">
+              <i /> <i /> <i />
+              <span>~/portfolio — zsh</span>
+            </div>
+            <div className="sk-term-body" aria-live="polite">
+              <p><b>cyryl@portfolio</b> % whoami</p>
+              <p>Cyryl Bitangcol</p>
+              <p><b>cyryl@portfolio</b> % {cmd}</p>
+              {lines.map((l) => (
+                <p key={l} className="sk-out">{l}</p>
+              ))}
+              <p><b>cyryl@portfolio</b> % <span className="sk-caret" /></p>
+            </div>
+            <div className="sk-cmds">
+              {TERMINAL_COMMANDS.map((c) => (
+                <button key={c} type="button" className={cmd === c ? 'is-on' : ''} onClick={() => setCmd(c)}>
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   )
