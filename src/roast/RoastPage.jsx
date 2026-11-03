@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { TbAlertTriangle, TbArrowRight, TbCheck, TbCopy, TbFlame, TbLoader2, TbPrinter, TbX } from 'react-icons/tb'
+import { TbAlertTriangle, TbArrowRight, TbCheck, TbChecklist, TbCopy, TbEye, TbFlame, TbLoader2, TbPrinter, TbTarget, TbX } from 'react-icons/tb'
 import { Footer, Header } from '../components/SiteChrome'
 import { BOOKING_URL } from '../data'
 import { analyze, gradeOf, labelOf, scoreColour, severityColour } from './analyze'
@@ -313,6 +313,50 @@ function Report({ report, data }) {
   )
 }
 
+// A sample report shown next to the form while nothing has been scanned yet.
+function PreviewCard() {
+  return (
+    <div className="rm-preview" aria-hidden="true">
+      <div className="rm-preview-bar">
+        <i />
+        <i />
+        <i />
+        <span>cyrylbitangcol.com/roast?url=yoursite.com</span>
+      </div>
+      <div className="rm-preview-body">
+        <div className="rm-preview-top">
+          <div>
+            <p>Overall score</p>
+            <strong>
+              92<small>/100</small>
+            </strong>
+          </div>
+          <span className="rm-preview-grade">A</span>
+        </div>
+        <blockquote>“Clear offer, one obvious next step and proof everywhere. Visitors know exactly where to click.”</blockquote>
+        <div className="rm-preview-row">
+          <span>
+            <TbEye /> First impression
+          </span>
+          <b>94</b>
+        </div>
+        <div className="rm-preview-row">
+          <span>
+            <TbTarget /> Conversion &amp; CTAs
+          </span>
+          <b>89</b>
+        </div>
+        <div className="rm-preview-more">
+          <span>
+            <TbChecklist /> +15 more checks
+          </span>
+          <em>All free</em>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function RoastPage() {
   const [url, setUrl] = useState('')
   const [invalid, setInvalid] = useState(false)
@@ -363,6 +407,7 @@ export default function RoastPage() {
     <div className="rm-page">
       <Header active="" onHome={false} />
       <main className="shell rm-main" ref={top}>
+        <div className={`rm-top${idle ? ' has-preview' : ''}`}>
         <section className="rm-hero">
           <p className="eyebrow">Free website audit</p>
           <h1>
@@ -395,6 +440,8 @@ export default function RoastPage() {
           )}
           <p className="rm-fine">Free, no signup · nothing stored · full report, nothing locked</p>
         </section>
+        {idle && <PreviewCard />}
+        </div>
 
         {busy && <Progress run={state} />}
 
